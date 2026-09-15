@@ -167,7 +167,7 @@ router.get('/', autenticar, autorizarFuncao('FORECAST', 'COMERCIAL', 'ADMIN'), a
 // ── PATCH /api/pedidos/:id/status — Comercial/PCP/Admin avança o status ──
 // PENDENTE → CONFIRMADO → CANCELADO. A cada mudança, reconstrói a demanda
 // dos produtos desse pedido (ver src/demanda.js).
-router.patch('/:id/status', autenticar, autorizarFuncao('FORECAST', 'COMERCIAL', 'ADMIN'), async (req, res) => {
+router.patch('/:id/status', autenticar, autorizarFuncao('COMERCIAL', 'ADMIN'), async (req, res) => {
   const { status } = req.body;
   const validos = ['PENDENTE', 'CONFIRMADO', 'CANCELADO'];
   if (!validos.includes(status)) {
