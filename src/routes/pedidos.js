@@ -5,6 +5,7 @@ const jwt     = require('jsonwebtoken');
 const db      = require('../db');
 const { autenticar, autorizarFuncao } = require('../middlewares/auth');
 const { evPedidoCriado } = require('../notificar');
+const { reconstruirDemanda } = require('../demanda');
 
 // ── Middleware: exige cliente autenticado (cookie token_cliente) ──
 function autenticarCliente(req, res, next) {
@@ -21,6 +22,8 @@ function autenticarCliente(req, res, next) {
 }
 
 // ── POST /api/pedidos — cliente logado cria um pedido (1+ itens) ──
+// Itens vêm como { produto_id, quantidade, unidade }. Só aceita produto
+// ACABADO e ativo — matéria-prima nunca pode ser pedida por um cliente.
 router.post('/', autenticarCliente, async (req, res) => {
   const { data_desejada, observacoes, itens } = req.body;
 
@@ -28,17 +31,36 @@ router.post('/', autenticarCliente, async (req, res) => {
     return res.status(400).json({ erro: 'Inclua ao menos um item no pedido.' });
   }
   for (const it of itens) {
-    if (!it.produto || !String(it.produto).trim()) {
+    if (!it.produto_id) {
       return res.status(400).json({ erro: 'Todo item precisa de um produto.' });
     }
     if (!it.quantidade || parseInt(it.quantidade) < 1) {
-      return res.status(400).json({ erro: `Quantidade inválida para "${it.produto}".` });
+      return res.status(400).json({ erro: 'Quantidade inválida em um dos itens.' });
     }
   }
 
   const client = await db.connect();
   try {
     await client.query('BEGIN');
+
+    // Valida que todo produto_id existe, é ACABADO e está ativo
+    const produtoIds = itens.map(it => it.produto_id);
+    const produtosCheck = await client.query(
+      `SELECT id, nome, tipo, ativo FROM produtos WHERE id = ANY($1::int[])`,
+      [produtoIds]
+    );
+    const produtosMap = new Map(produtosCheck.rows.map(p => [p.id, p]));
+    for (const it of itens) {
+      const p = produtosMap.get(parseInt(it.produto_id));
+      if (!p) {
+        await client.query('ROLLBACK');
+        return res.status(400).json({ erro: 'Produto inválido em um dos itens.' });
+      }
+      if (p.tipo !== 'ACABADO' || !p.ativo) {
+        await client.query('ROLLBACK');
+        return res.status(400).json({ erro: `"${p.nome}" não está disponível para pedido.` });
+      }
+    }
 
     const pedido = await client.query(
       `INSERT INTO pedidos (cliente_id, data_desejada, observacoes)
@@ -49,15 +71,17 @@ router.post('/', autenticarCliente, async (req, res) => {
 
     for (const it of itens) {
       await client.query(
-        `INSERT INTO pedido_itens (pedido_id, produto, quantidade, unidade)
+        `INSERT INTO pedido_itens (pedido_id, produto_id, quantidade, unidade)
          VALUES ($1, $2, $3, $4)`,
-        [pedidoId, it.produto.trim(), parseInt(it.quantidade), it.unidade || null]
+        [pedidoId, it.produto_id, parseInt(it.quantidade), it.unidade || null]
       );
     }
 
     await client.query('COMMIT');
 
-    const resumo = itens.map(it => `${it.quantidade}x ${it.produto.trim()}`).join(', ');
+    const resumo = itens
+      .map(it => `${it.quantidade}x ${produtosMap.get(parseInt(it.produto_id)).nome}`)
+      .join(', ');
     await evPedidoCriado(req.cliente.nome, numero, resumo);
 
     return res.json({ mensagem: 'Pedido enviado com sucesso!', numero, id: pedidoId });
@@ -81,10 +105,12 @@ router.get('/meus', autenticarCliente, async (req, res) => {
     const ids = pedidos.rows.map(p => p.id);
     let itensPorPedido = {};
     if (ids.length) {
-      // NOTE: agora inclui "id" — necessário para o Forecast referenciar pedido_item_id
       const itens = await db.query(
-        `SELECT id, pedido_id, produto, quantidade, unidade
-         FROM pedido_itens WHERE pedido_id = ANY($1::int[]) ORDER BY id`,
+        `SELECT pi.id, pi.pedido_id, pi.produto_id, pr.nome AS produto,
+                pi.quantidade, pi.unidade
+         FROM pedido_itens pi
+         JOIN produtos pr ON pr.id = pi.produto_id
+         WHERE pi.pedido_id = ANY($1::int[]) ORDER BY pi.id`,
         [ids]
       );
       itensPorPedido = itens.rows.reduce((acc, it) => {
@@ -117,10 +143,12 @@ router.get('/', autenticar, autorizarFuncao('FORECAST', 'COMERCIAL', 'ADMIN'), a
     const ids = pedidos.rows.map(p => p.id);
     let itensPorPedido = {};
     if (ids.length) {
-      // NOTE: agora inclui "id" — necessário para o Forecast referenciar pedido_item_id
       const itens = await db.query(
-        `SELECT id, pedido_id, produto, quantidade, unidade
-         FROM pedido_itens WHERE pedido_id = ANY($1::int[]) ORDER BY id`,
+        `SELECT pi.id, pi.pedido_id, pi.produto_id, pr.nome AS produto,
+                pi.quantidade, pi.unidade
+         FROM pedido_itens pi
+         JOIN produtos pr ON pr.id = pi.produto_id
+         WHERE pi.pedido_id = ANY($1::int[]) ORDER BY pi.id`,
         [ids]
       );
       itensPorPedido = itens.rows.reduce((acc, it) => {
@@ -137,23 +165,43 @@ router.get('/', autenticar, autorizarFuncao('FORECAST', 'COMERCIAL', 'ADMIN'), a
 });
 
 // ── PATCH /api/pedidos/:id/status — Comercial/PCP/Admin avança o status ──
+// PENDENTE → CONFIRMADO → CANCELADO. A cada mudança, reconstrói a demanda
+// dos produtos desse pedido (ver src/demanda.js).
 router.patch('/:id/status', autenticar, autorizarFuncao('FORECAST', 'COMERCIAL', 'ADMIN'), async (req, res) => {
   const { status } = req.body;
-  const validos = ['SOLICITADO', 'EM_ANALISE', 'ATENDIDO_ESTOQUE', 'AGUARDANDO_PRODUCAO', 'CONCLUIDO', 'CANCELADO'];
+  const validos = ['PENDENTE', 'CONFIRMADO', 'CANCELADO'];
   if (!validos.includes(status)) {
     return res.status(400).json({ erro: 'Status inválido.' });
   }
+
+  const client = await db.connect();
   try {
-    const r = await db.query(
+    await client.query('BEGIN');
+
+    const r = await client.query(
       `UPDATE pedidos SET status = $1, atualizado_em = NOW()
        WHERE id = $2 RETURNING id, numero, cliente_id, status`,
       [status, req.params.id]
     );
-    if (!r.rows.length) return res.status(404).json({ erro: 'Pedido não encontrado.' });
+    if (!r.rows.length) {
+      await client.query('ROLLBACK');
+      return res.status(404).json({ erro: 'Pedido não encontrado.' });
+    }
+
+    const itens = await client.query(
+      `SELECT produto_id FROM pedido_itens WHERE pedido_id = $1`,
+      [req.params.id]
+    );
+    await reconstruirDemanda(client, itens.rows.map(it => it.produto_id));
+
+    await client.query('COMMIT');
     return res.json({ mensagem: 'Status atualizado.', pedido: r.rows[0] });
   } catch (erro) {
+    await client.query('ROLLBACK');
     console.error('Erro ao atualizar status:', erro.message);
     return res.status(500).json({ erro: 'Erro interno.' });
+  } finally {
+    client.release();
   }
 });
 
