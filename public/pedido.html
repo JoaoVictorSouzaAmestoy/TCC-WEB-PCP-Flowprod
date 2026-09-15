@@ -110,11 +110,8 @@
   .pedido-data { font-size:12px; color:#4a6080; margin-top:2px; }
   .pedido-resumo { font-size:12px; color:#6b82a0; }
   .status-pill { font-size:11px; font-weight:700; letter-spacing:.5px; text-transform:uppercase; padding:4px 12px; border-radius:20px; white-space:nowrap; }
-  .st-SOLICITADO          { background:rgba(43,127,255,.12); color:#2b7fff; border:1px solid rgba(43,127,255,.25); }
-  .st-EM_ANALISE          { background:rgba(245,158,11,.12); color:#f59e0b; border:1px solid rgba(245,158,11,.25); }
-  .st-ATENDIDO_ESTOQUE    { background:rgba(6,182,212,.12);  color:#06b6d4; border:1px solid rgba(6,182,212,.25); }
-  .st-AGUARDANDO_PRODUCAO { background:rgba(168,85,247,.12); color:#a855f7; border:1px solid rgba(168,85,247,.25); }
-  .st-CONCLUIDO           { background:rgba(34,197,94,.12);  color:#22c55e; border:1px solid rgba(34,197,94,.25); }
+  .st-PENDENTE            { background:rgba(245,158,11,.12); color:#f59e0b; border:1px solid rgba(245,158,11,.25); }
+  .st-CONFIRMADO          { background:rgba(34,197,94,.12);  color:#22c55e; border:1px solid rgba(34,197,94,.25); }
   .st-CANCELADO           { background:rgba(244,63,94,.12);  color:#f43f5e; border:1px solid rgba(244,63,94,.25); }
   .pedido-detalhe { display:none; padding:0 20px 18px; border-top:1px solid #1a2740; }
   .pedido-detalhe.aberto { display:block; }
@@ -261,6 +258,7 @@
 
 <script>
   let _itemSeq = 0;
+  let _catalogo = [];
 
   fetch('/api/clientes/me', { credentials:'include' })
     .then(r => { if(!r.ok) throw new Error(); return r.json(); })
@@ -269,6 +267,11 @@
       document.getElementById('avatar').textContent   = d.cliente.nome.charAt(0).toUpperCase();
     })
     .catch(() => window.location.href = '/');
+
+  fetch('/api/produtos/catalogo', { credentials:'include' })
+    .then(r => { if(!r.ok) throw new Error(); return r.json(); })
+    .then(d => { _catalogo = d.produtos || []; adicionarItem(); })
+    .catch(() => { _catalogo = []; adicionarItem(); });
 
   function mudarAba(aba) {
     document.getElementById('panelNovo').classList.toggle('active', aba === 'novo');
@@ -283,13 +286,25 @@
     const div = document.createElement('div');
     div.className = 'item-row';
     div.id = `item-${id}`;
+    const opcoes = _catalogo.map(p =>
+      `<option value="${p.id}" data-unidade="${p.unidade_padrao}">${p.nome}</option>`
+    ).join('');
     div.innerHTML = `
-      <input type="text" placeholder="Produto / item" class="item-produto" maxlength="200">
+      <select class="item-produto" onchange="preencherUnidade(this)">
+        <option value="">Selecione um produto...</option>
+        ${opcoes}
+      </select>
       <input type="number" placeholder="Qtd" class="item-qtd-input" min="1">
-      <input type="text" placeholder="Un." class="item-unidade" maxlength="20">
+      <input type="text" placeholder="Un." class="item-unidade" maxlength="20" readonly>
       <button type="button" class="btn-remover-item" onclick="removerItem(${id})" title="Remover">✕</button>
     `;
     document.getElementById('listaItens').appendChild(div);
+  }
+
+  function preencherUnidade(select) {
+    const row = select.closest('.item-row');
+    const opt = select.options[select.selectedIndex];
+    row.querySelector('.item-unidade').value = opt?.dataset.unidade || '';
   }
 
   function removerItem(id) {
@@ -303,10 +318,10 @@
 
   function coletarItens() {
     return Array.from(document.querySelectorAll('.item-row')).map(row => ({
-      produto: row.querySelector('.item-produto').value.trim(),
+      produto_id: row.querySelector('.item-produto').value,
       quantidade: row.querySelector('.item-qtd-input').value,
       unidade: row.querySelector('.item-unidade').value.trim() || null,
-    })).filter(it => it.produto || it.quantidade);
+    })).filter(it => it.produto_id || it.quantidade);
   }
 
   async function enviarPedido() {
@@ -326,8 +341,8 @@
       return;
     }
     for (const it of itens) {
-      if (!it.produto || !it.quantidade || parseInt(it.quantidade) < 1) {
-        msg.textContent = 'Preencha produto e quantidade válida em todos os itens.';
+      if (!it.produto_id || !it.quantidade || parseInt(it.quantidade) < 1) {
+        msg.textContent = 'Selecione um produto e informe uma quantidade válida em todos os itens.';
         msg.className = 'msg err'; msg.style.display = 'block';
         return;
       }
@@ -361,9 +376,7 @@
   }
 
   const STATUS_LABEL = {
-    SOLICITADO: 'Solicitado', EM_ANALISE: 'Em análise',
-    ATENDIDO_ESTOQUE: 'Atendido pelo estoque', AGUARDANDO_PRODUCAO: 'Aguardando produção',
-    CONCLUIDO: 'Concluído', CANCELADO: 'Cancelado',
+    PENDENTE: 'Pendente', CONFIRMADO: 'Confirmado', CANCELADO: 'Cancelado',
   };
 
   async function carregarHistorico() {
