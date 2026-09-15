@@ -69,7 +69,7 @@ CREATE TABLE solicitacoes_executor (
 -- Produtos (tabela mestre — acabados e matérias-primas)
 CREATE TABLE produtos (
   id             SERIAL PRIMARY KEY,
-  nome           VARCHAR(200) NOT NULL,
+  nome           VARCHAR(200) NOT NULL UNIQUE,
   tipo           VARCHAR(20)  NOT NULL
                  CHECK (tipo IN ('ACABADO','MATERIA_PRIMA')),
   unidade_padrao VARCHAR(20)  NOT NULL,
