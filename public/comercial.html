@@ -75,11 +75,8 @@
   .pedido-data { font-size:12px; color:#4a6080; }
   .pedido-resumo { font-size:12px; color:#6b82a0; margin-top:2px; }
   .status-pill { font-size:11px; font-weight:700; letter-spacing:.5px; text-transform:uppercase; padding:5px 13px; border-radius:20px; white-space:nowrap; }
-  .st-SOLICITADO          { background:rgba(43,127,255,.12); color:#2b7fff; border:1px solid rgba(43,127,255,.25); }
-  .st-EM_ANALISE          { background:rgba(245,158,11,.12); color:#f59e0b; border:1px solid rgba(245,158,11,.25); }
-  .st-ATENDIDO_ESTOQUE    { background:rgba(6,182,212,.12);  color:#06b6d4; border:1px solid rgba(6,182,212,.25); }
-  .st-AGUARDANDO_PRODUCAO { background:rgba(168,85,247,.12); color:#a855f7; border:1px solid rgba(168,85,247,.25); }
-  .st-CONCLUIDO           { background:rgba(34,197,94,.12);  color:#22c55e; border:1px solid rgba(34,197,94,.25); }
+  .st-PENDENTE            { background:rgba(245,158,11,.12); color:#f59e0b; border:1px solid rgba(245,158,11,.25); }
+  .st-CONFIRMADO          { background:rgba(34,197,94,.12);  color:#22c55e; border:1px solid rgba(34,197,94,.25); }
   .st-CANCELADO           { background:rgba(244,63,94,.12);  color:#f43f5e; border:1px solid rgba(244,63,94,.25); }
 
   .pedido-detalhe { display:none; padding:0 20px 18px; border-top:1px solid #1a2740; }
@@ -141,15 +138,13 @@
   <div class="header-row">
     <div>
       <div class="header-titulo">📋 Pedidos recebidos</div>
-      <div class="header-sub">Analise as demandas dos clientes e encaminhe para estoque ou produção.</div>
+      <div class="header-sub">Confirme os pedidos dos clientes — a demanda é gerada automaticamente.</div>
     </div>
     <div class="filtros" id="filtros">
       <button class="filtro-btn active" data-status="" onclick="filtrar('', this)">Todos</button>
-      <button class="filtro-btn" data-status="SOLICITADO" onclick="filtrar('SOLICITADO', this)">Solicitado</button>
-      <button class="filtro-btn" data-status="EM_ANALISE" onclick="filtrar('EM_ANALISE', this)">Em análise</button>
-      <button class="filtro-btn" data-status="ATENDIDO_ESTOQUE" onclick="filtrar('ATENDIDO_ESTOQUE', this)">Atendido</button>
-      <button class="filtro-btn" data-status="AGUARDANDO_PRODUCAO" onclick="filtrar('AGUARDANDO_PRODUCAO', this)">Em produção</button>
-      <button class="filtro-btn" data-status="CONCLUIDO" onclick="filtrar('CONCLUIDO', this)">Concluído</button>
+      <button class="filtro-btn" data-status="PENDENTE" onclick="filtrar('PENDENTE', this)">Pendente</button>
+      <button class="filtro-btn" data-status="CONFIRMADO" onclick="filtrar('CONFIRMADO', this)">Confirmado</button>
+      <button class="filtro-btn" data-status="CANCELADO" onclick="filtrar('CANCELADO', this)">Cancelado</button>
     </div>
   </div>
 
@@ -271,18 +266,13 @@
 
   // ── Pedidos ──────────────────────────────────────────────
   const STATUS_LABEL = {
-    SOLICITADO: 'Solicitado', EM_ANALISE: 'Em análise',
-    ATENDIDO_ESTOQUE: 'Atendido pelo estoque', AGUARDANDO_PRODUCAO: 'Aguardando produção',
-    CONCLUIDO: 'Concluído', CANCELADO: 'Cancelado',
+    PENDENTE: 'Pendente', CONFIRMADO: 'Confirmado', CANCELADO: 'Cancelado',
   };
-  // Próximas ações válidas a partir de cada status (fluxo: solicitado → análise → estoque OU produção → concluído)
+  // Próximas ações válidas a partir de cada status.
+  // Confirmar dispara a reconstrução automática da demanda (feita no backend).
   const PROXIMAS_ACOES = {
-    SOLICITADO:          [{ status:'EM_ANALISE',          label:'▶ Iniciar análise' }],
-    EM_ANALISE:          [{ status:'ATENDIDO_ESTOQUE',    label:'📦 Atender com estoque' },
-                           { status:'AGUARDANDO_PRODUCAO', label:'🏭 Enviar para produção' }],
-    ATENDIDO_ESTOQUE:    [{ status:'CONCLUIDO',           label:'✔ Concluir pedido' }],
-    AGUARDANDO_PRODUCAO: [{ status:'CONCLUIDO',           label:'✔ Concluir pedido' }],
-    CONCLUIDO:  [],
+    PENDENTE:   [{ status:'CONFIRMADO', label:'✔ Confirmar pedido' }],
+    CONFIRMADO: [],
     CANCELADO:  [],
   };
 
@@ -328,7 +318,7 @@
     const acoes = (PROXIMAS_ACOES[p.status] || []).map(a =>
       `<button class="btn-acao primaria" onclick="event.stopPropagation(); atualizarStatus(${p.id}, '${a.status}', this)">${a.label}</button>`
     ).join('');
-    const btnCancelar = (p.status !== 'CONCLUIDO' && p.status !== 'CANCELADO')
+    const btnCancelar = (p.status !== 'CANCELADO')
       ? `<button class="btn-acao cancelar" onclick="event.stopPropagation(); if(confirm('Cancelar este pedido?')) atualizarStatus(${p.id}, 'CANCELADO', this)">✕ Cancelar</button>`
       : '';
 
