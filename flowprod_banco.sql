@@ -16,9 +16,11 @@ DROP TABLE IF EXISTS mrp                     CASCADE;
 DROP TABLE IF EXISTS estoque                 CASCADE;
 DROP TABLE IF EXISTS plano_mestre            CASCADE;
 DROP TABLE IF EXISTS forecast                CASCADE;
+DROP TABLE IF EXISTS demanda                CASCADE;
 DROP TABLE IF EXISTS pedido_itens            CASCADE;
 DROP TABLE IF EXISTS pedidos_cliente         CASCADE;
 DROP TABLE IF EXISTS pedidos                 CASCADE;
+DROP TABLE IF EXISTS produtos                CASCADE;
 DROP TABLE IF EXISTS clientes                CASCADE;
 DROP FUNCTION IF EXISTS gerar_numero_pedido  CASCADE;
 DROP TABLE IF EXISTS usuarios                CASCADE;
@@ -64,6 +66,18 @@ CREATE TABLE solicitacoes_executor (
   resolvido_em TIMESTAMP
 );
 
+-- Produtos (tabela mestre — acabados e matérias-primas)
+CREATE TABLE produtos (
+  id             SERIAL PRIMARY KEY,
+  nome           VARCHAR(200) NOT NULL,
+  tipo           VARCHAR(20)  NOT NULL
+                 CHECK (tipo IN ('ACABADO','MATERIA_PRIMA')),
+  unidade_padrao VARCHAR(20)  NOT NULL,
+  ativo          BOOLEAN      DEFAULT TRUE,
+  criado_em      TIMESTAMP    DEFAULT NOW(),
+  atualizado_em  TIMESTAMP    DEFAULT NOW()
+);
+
 -- Pedidos dos clientes (cabeçalho — um pedido pode ter vários produtos)
 CREATE TABLE pedidos (
   id            SERIAL PRIMARY KEY,
@@ -71,8 +85,8 @@ CREATE TABLE pedidos (
   cliente_id    INTEGER      NOT NULL REFERENCES clientes(id) ON DELETE CASCADE,
   data_desejada DATE,
   observacoes   TEXT,
-  status        VARCHAR(20)  DEFAULT 'SOLICITADO'
-                CHECK (status IN ('SOLICITADO','EM_ANALISE','ATENDIDO_ESTOQUE','AGUARDANDO_PRODUCAO','CONCLUIDO','CANCELADO')),
+  status        VARCHAR(20)  DEFAULT 'PENDENTE'
+                CHECK (status IN ('PENDENTE','CONFIRMADO','CANCELADO')),
   criado_em     TIMESTAMP    DEFAULT NOW(),
   atualizado_em TIMESTAMP    DEFAULT NOW()
 );
@@ -92,11 +106,25 @@ FOR EACH ROW EXECUTE FUNCTION gerar_numero_pedido();
 -- Itens do pedido (um produto + quantidade por linha)
 CREATE TABLE pedido_itens (
   id         SERIAL PRIMARY KEY,
-  pedido_id  INTEGER      NOT NULL REFERENCES pedidos(id) ON DELETE CASCADE,
-  produto    VARCHAR(200) NOT NULL,
+  pedido_id  INTEGER      NOT NULL REFERENCES pedidos(id)  ON DELETE CASCADE,
+  produto_id INTEGER      NOT NULL REFERENCES produtos(id) ON DELETE RESTRICT,
   quantidade INTEGER      NOT NULL CHECK (quantidade > 0),
   unidade    VARCHAR(20),
   criado_em  TIMESTAMP    DEFAULT NOW()
+);
+
+-- Demanda consolidada — agregada por produto + mês, a partir de pedidos CONFIRMADO.
+-- Não é cópia de pedido: reconstruída via DELETE+INSERT (src/demanda.js) sempre que
+-- o status de um pedido muda (feito em código Node, não trigger de banco).
+CREATE TABLE demanda (
+  id             SERIAL PRIMARY KEY,
+  produto_id     INTEGER       NOT NULL REFERENCES produtos(id) ON DELETE RESTRICT,
+  periodo_inicio DATE          NOT NULL,   -- sempre dia 1 do mês
+  quantidade     NUMERIC(12,2) NOT NULL DEFAULT 0,
+  origem         VARCHAR(30)   DEFAULT 'PEDIDOS',
+  criado_em      TIMESTAMP     DEFAULT NOW(),
+  atualizado_em  TIMESTAMP     DEFAULT NOW(),
+  UNIQUE (produto_id, periodo_inicio)
 );
 
 -- Forecast (previsão de demanda) — nasce a partir de um item de pedido
