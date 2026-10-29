@@ -5,12 +5,19 @@ const cors         = require('cors');
 const path         = require('path');
 
 const authRoutes             = require('./src/routes/auth');
-const dadosRoutes            = require('./src/routes/dados');
 const usuariosRoutes         = require('./src/routes/usuarios');
 const senhaRoutes            = require('./src/routes/senha');
 const pedidosRoutes          = require('./src/routes/pedidos');
 const produtosRoutes         = require('./src/routes/produtos');
 const demandaRoutes          = require('./src/routes/demanda');
+const forecastRoutes         = require('./src/routes/forecast');
+const papRoutes              = require('./src/routes/pap');
+const pmpRoutes              = require('./src/routes/pmp');
+const estoqueRoutes          = require('./src/routes/estoque');
+const bomRoutes              = require('./src/routes/bom');
+const mrpRoutes              = require('./src/routes/mrp');
+const compraProducaoRoutes   = require('./src/routes/compra-producao');
+const testeRoutes            = require('./src/routes/teste');
 const clientesRoutes         = require('./src/routes/clientes');
 const notifRoutes            = require('./src/routes/notificacoes');
 const alertasRoutes          = require('./src/routes/alertas');
@@ -97,6 +104,14 @@ app.use('/api/senha',                 senhaRoutes);
 app.use('/api/pedidos',               pedidosRoutes);
 app.use('/api/produtos',              produtosRoutes);
 app.use('/api/demanda',               demandaRoutes);
+app.use('/api/forecast',              forecastRoutes);
+app.use('/api/pap',                   papRoutes);
+app.use('/api/pmp',                   pmpRoutes);
+app.use('/api/estoque',               estoqueRoutes);
+app.use('/api/bom',                   bomRoutes);
+app.use('/api/mrp',                   mrpRoutes);
+app.use('/api/compra-producao',       compraProducaoRoutes);
+app.use('/api/test',                  testeRoutes);
 app.use('/api/clientes',              clientesRoutes);
 app.use('/api/notificacoes',          notifRoutes);
 app.use('/api/alertas',               alertasRoutes);
@@ -104,7 +119,6 @@ app.use('/api/colaborador',           colaboradorRoutes);
 app.use('/api/solicitacoes-executor', solicitacoesExecRoutes);
 app.use('/api/convites',              convitesRoutes);
 app.use('/api/logs',                  logsRoutes);
-app.use('/api',                       dadosRoutes);
 
 // ── HTML ───────────────────────────────────────────────────────
 const pub = (file) => (req, res) =>
