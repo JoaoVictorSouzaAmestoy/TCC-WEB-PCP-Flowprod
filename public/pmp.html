@@ -5,451 +5,111 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>FlowProd — PMP</title>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-<style>
-  * { box-sizing:border-box; margin:0; padding:0; }
-  body { background:#080d14; color:#e8edf5; font-family:'Poppins',sans-serif; min-height:100vh; display:flex; flex-direction:column; }
-  .topbar { background:#0d1520; border-bottom:1px solid #1a2740; padding:0 32px; height:60px; display:flex; align-items:center; justify-content:space-between; }
-  .topbar-left { display:flex; align-items:center; gap:12px; }
-  .logo { font-size:18px; font-weight:700; color:#2b7fff; letter-spacing:1px; }
-  .divider { width:1px; height:24px; background:#1a2740; }
-  .page-title { font-size:14px; color:#6b82a0; font-weight:500; }
-  .topbar-right { display:flex; align-items:center; gap:16px; }
-  .user-info { display:flex; align-items:center; gap:8px; }
-  .user-avatar { width:32px; height:32px; border-radius:50%; background:linear-gradient(135deg,#6b21a8,#a855f7); display:flex; align-items:center; justify-content:center; font-size:13px; font-weight:600; }
-  .user-name { font-size:13px; color:#a0b0c8; }
-  .btn-logout { background:none; border:1px solid #1a2740; color:#6b82a0; padding:6px 14px; border-radius:6px; font-size:12px; cursor:pointer; font-family:'Poppins',sans-serif; transition:.2s; }
-  .btn-logout:hover { border-color:#a855f7; color:#a855f7; }
-  .hero { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:20px; padding:48px 24px; }
-  .badge { padding:6px 18px; border-radius:8px; font-size:13px; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; background:rgba(168,85,247,.12); color:#a855f7; border:1px solid rgba(168,85,247,.25); }
-  .icon { font-size:72px; line-height:1; filter:drop-shadow(0 0 24px rgba(168,85,247,.4)); }
-  h1 { font-size:36px; font-weight:700; text-align:center; }
-  h1 span { color:#a855f7; }
-  .desc { color:#4a6080; font-size:15px; text-align:center; max-width:480px; line-height:1.7; }
-  .status-tag { display:flex; align-items:center; gap:8px; background:#0d1520; border:1px solid #1a2740; padding:10px 20px; border-radius:8px; font-size:13px; color:#3a5070; }
-  .dot { width:8px; height:8px; border-radius:50%; background:#1a3550; }
-
-  /* ── Module Switcher ── */
-  #moduleSwitcher {
-    position:relative; display:none; align-items:center; gap:0;
-    background:#080d14; border:1px solid #1a2740; border-radius:8px; overflow:visible;
-  }
-  .mod-current {
-    display:flex; align-items:center; gap:6px;
-    padding:4px 10px; font-size:13px; color:#a0b0c8;
-  }
-  .mod-arrow-btn {
-    background:none; border:none; border-left:1px solid #1a2740;
-    color:#6b82a0; cursor:pointer; padding:4px 8px; font-size:13px;
-    transition:.2s; height:100%;
-  }
-  .mod-arrow-btn:hover { color:#2b7fff; background:#0a1220; }
-  .mod-dropdown {
-    display:none; position:absolute; top:calc(100% + 6px); right:0;
-    background:#0d1520; border:1px solid #1a2740; border-radius:10px;
-    min-width:180px; z-index:50; overflow:hidden; box-shadow:0 8px 24px rgba(0,0,0,.4);
-  }
-  .mod-item {
-    display:flex; align-items:center; gap:10px;
-    padding:11px 16px; font-size:13px; color:#e8edf5; text-decoration:none; transition:.15s;
-  }
-  .mod-item:hover { background:#1a2740; color:#2b7fff; }
-
-
-  /* ── Sino de notificações ── */
-  .sino-wrap { position:relative; }
-  .sino-btn {
-    background:none; border:1px solid #1a2740; border-radius:8px;
-    color:#6b82a0; cursor:pointer; padding:6px 10px; font-size:16px;
-    transition:.2s; position:relative; line-height:1;
-  }
-  .sino-btn:hover { border-color:#2b7fff; color:#2b7fff; }
-  .sino-badge {
-    position:absolute; top:-6px; right:-6px;
-    background:#f43f5e; color:#fff; font-size:10px; font-weight:700;
-    width:18px; height:18px; border-radius:50%;
-    display:none; align-items:center; justify-content:center;
-    border:2px solid #080d14;
-  }
-  .notif-painel {
-    display:none; position:absolute; top:calc(100% + 8px); right:0;
-    width:340px; background:#0d1520; border:1px solid #1a2740;
-    border-radius:12px; z-index:200;
-    box-shadow:0 12px 40px rgba(0,0,0,.5); overflow:hidden;
-  }
-  .notif-header {
-    display:flex; align-items:center; justify-content:space-between;
-    padding:14px 16px; border-bottom:1px solid #1a2740;
-  }
-  .notif-header span { font-size:13px; font-weight:600; }
-  .notif-marcar {
-    background:none; border:none; color:#6b82a0; cursor:pointer;
-    font-size:11px; font-family:'Poppins',sans-serif; transition:.2s;
-  }
-  .notif-marcar:hover { color:#2b7fff; }
-  .notif-lista { max-height:320px; overflow-y:auto; }
-  .notif-item {
-    padding:13px 16px; border-bottom:1px solid #0d1928;
-    display:flex; gap:10px; align-items:flex-start; transition:.15s;
-  }
-  .notif-item:hover { background:#080d14; }
-  .notif-item.nao-lida { background:rgba(43,127,255,.05); }
-  .notif-item.nao-lida:hover { background:rgba(43,127,255,.08); }
-  .notif-dot { width:7px; height:7px; border-radius:50%; background:#2b7fff; margin-top:5px; flex-shrink:0; }
-  .notif-dot.lida { background:#1a2740; }
-  .notif-titulo { font-size:13px; font-weight:600; margin-bottom:2px; }
-  .notif-msg { font-size:12px; color:#6b82a0; line-height:1.5; }
-  .notif-tempo { font-size:11px; color:#3a5070; margin-top:3px; }
-  .notif-vazia { padding:28px; text-align:center; color:#3a5070; font-size:13px; }
-
-
-  /* ── Sino de Notificações ── */
-  .notif-wrap { position:relative; }
-  .notif-bell {
-    background:none; border:1px solid #1a2740; border-radius:8px;
-    color:#6b82a0; cursor:pointer; font-size:16px; padding:5px 10px;
-    transition:.2s; position:relative; display:flex; align-items:center; gap:0;
-  }
-  .notif-bell:hover { border-color:#2b7fff; color:#2b7fff; }
-  .notif-count {
-    position:absolute; top:-6px; right:-6px; background:#f43f5e; color:#fff;
-    font-size:10px; font-weight:700; border-radius:10px; padding:1px 5px;
-    min-width:16px; text-align:center; display:none; font-family:'Poppins',sans-serif;
-  }
-  .notif-panel {
-    display:none; position:absolute; top:calc(100% + 8px); right:0;
-    background:#0d1520; border:1px solid #1a2740; border-radius:12px;
-    width:320px; max-height:400px; overflow-y:auto; z-index:200;
-    box-shadow:0 8px 32px rgba(0,0,0,.5);
-  }
-  .notif-header {
-    padding:12px 16px; border-bottom:1px solid #1a2740;
-    display:flex; align-items:center; justify-content:space-between;
-  }
-  .notif-header span { font-size:13px; font-weight:600; }
-  .notif-mark { background:none; border:none; color:#2b7fff; cursor:pointer;
-    font-size:11px; font-family:'Poppins',sans-serif; padding:0; }
-  .notif-mark:hover { text-decoration:underline; }
-  .notif-item {
-    padding:12px 16px; border-bottom:1px solid #0d1825;
-    display:flex; gap:10px; cursor:default; transition:.15s;
-  }
-  .notif-item.nao-lida { background:#0a1422; }
-  .notif-item:hover { background:#111d2e; }
-  .notif-dot { width:7px; height:7px; border-radius:50%; background:#2b7fff;
-    flex-shrink:0; margin-top:5px; }
-  .notif-dot.lida { background:transparent; }
-  .notif-body { flex:1; }
-  .notif-titulo { font-size:13px; font-weight:600; }
-  .notif-msg { font-size:12px; color:#6b82a0; margin-top:2px; line-height:1.5; }
-  .notif-time { font-size:11px; color:#3a5070; margin-top:4px; }
-  .notif-empty { padding:24px; text-align:center; font-size:13px; color:#3a5070; }
-
-</style>
+<link rel="stylesheet" href="/css/flowprod-app.css">
+<style>:root { --accent:#a855f7; --accent2:#6b21a8; }</style>
 </head>
 <body>
-<div class="topbar">
-  <div class="topbar-left">
-    <span class="logo">FlowProd</span>
-    <div class="divider"></div>
-    <span class="page-title">Plano Mestre de Produção</span>
+<div id="shell-topbar"></div>
+
+<div class="main">
+  <div class="page-head">
+    <div class="page-h1">📋 PMP — Plano Mestre de Produção</div>
+    <div class="page-sub">O PMP é gerado automaticamente quando um item do PAP é aprovado: a quantidade do mês é dividida em 4 semanas iguais. Redistribua entre as semanas se precisar (o total deve continuar igual ao do PAP) e aprove. Aprovar dispara o MRP.</div>
   </div>
-  <div class="topbar-right">
-    <div class="notif-wrap">
-      <button class="notif-bell" onclick="toggleNotif(event)" title="Notificações">
-        🔔
-        <span class="notif-count" id="notifCount"></span>
-      </button>
-      <div class="notif-panel" id="notifPanel">
-        <div class="notif-header">
-          <span>🔔 Notificações</span>
-          <button class="notif-mark" onclick="marcarLidas()">Marcar lidas</button>
-          <button class="notif-mark" onclick="limparNotif()" style="color:#f43f5e;">🗑 Limpar</button>
-        </div>
-        <div id="notifLista"></div>
-      </div>
-    </div>
-    <div id="moduleSwitcher">
-      <div class="mod-current">
-        <span>📋 PMP</span>
-      </div>
-      <button class="mod-arrow-btn" onclick="toggleDropdown(event)" title="Trocar módulo">▾</button>
-      <div class="mod-dropdown" id="moduleDropdown"></div>
-    </div>
-    <div class="user-info">
-      <div class="user-avatar" id="avatar">?</div>
-      <span class="user-name" id="userName">Carregando...</span>
-    </div>
-    <button class="btn-logout" onclick="logout()">Sair</button>
+
+  <div class="toolbar">
+    <div class="field"><label>Mês</label><input type="month" id="periodo"></div>
   </div>
+
+  <div id="lista"><div class="vazio">Carregando...</div></div>
 </div>
-<div class="hero">
-  <div class="badge">PMP</div>
-  <div class="icon">📋</div>
-  <h1>Plano Mestre de <span>Produção</span></h1>
-  <p class="desc">Módulo responsável pelo planejamento mestre da produção.<br>Em breve: ordens de produção, capacidade planejada e horizonte de planejamento.</p>
-  <div class="status-tag"><div class="dot"></div>Módulo em desenvolvimento</div>
-</div>
+
+<script src="/js/flowprod-shell.js"></script>
 <script>
-  fetch('/api/me', { credentials:'include', headers: { 'Accept': 'application/json' } })
-    .then(r => { if(!r.ok) throw new Error(); return r.json(); })
-    .then(d => {
-      const u = d.usuario;
-      if(!u.funcoes || (!u.funcoes.includes('PMP') && !u.funcoes.includes('ADMIN'))) { window.location.href = '/'; return; }
-      document.getElementById('userName').textContent = u.nome;
-      document.getElementById('avatar').textContent = u.nome.charAt(0).toUpperCase();
-      renderSwitcher(u.funcoes);
-    })
-    .catch(() => window.location.href = '/');
-  async function logout() {
-    await fetch('/api/logout', { method:'POST', credentials:'include' });
-    window.location.href = '/';
-  }
+  const { esc, fmt, api, toast, executar } = FlowShell;
+  let periodo = FlowShell.lerPeriodo();
+  let dados = [];
 
-  // ── Troca de módulo sem novo login ──
-  const DEST = { COMERCIAL:'/comercial.html', FORECAST:'/forecast.html', PAP:'/pap.html', PMP:'/pmp.html', MRP:'/mrp.html', ESTOQUE:'/estoque.html', COMPRA_PRODUCAO:'/compra-producao.html', ADMIN:'/admin.html' };
-  const ICON = { COMERCIAL:'🤝', FORECAST:'📊', PAP:'📐', PMP:'📋', MRP:'⚙️', ESTOQUE:'📦', COMPRA_PRODUCAO:'🏭', ADMIN:'🛠️' };
-  const LABEL = { COMERCIAL:'Comercial', FORECAST:'Forecast', PAP:'PAP', PMP:'PMP', MRP:'MRP', ESTOQUE:'Estoque', COMPRA_PRODUCAO:'Compra/Produção', ADMIN:'Admin' };
-  let _outrosFuncoes = [];
-
-  function renderSwitcher(funcoes) {
-    // Mostra no dropdown todas as funções EXCETO a atual
-    _outrosFuncoes = (funcoes||[]).filter(f => f !== 'PMP');
-    const sw = document.getElementById('moduleSwitcher');
-    if (!sw) return;
-    if (_outrosFuncoes.length === 0) { sw.style.display = 'none'; return; }
-    sw.style.display = 'flex';
-  }
-
-  function toggleDropdown(e) {
-    e.stopPropagation();
-    const dd = document.getElementById('moduleDropdown');
-    const open = dd.style.display === 'block';
-    dd.style.display = 'none';
-    if (!open) {
-      dd.innerHTML = _outrosFuncoes
-        .map(f => `<a class="mod-item" href="${DEST[f]||'/'}">${ICON[f]||'🔧'} ${LABEL[f]||f}</a>`)
-        .join('');
-      dd.style.display = 'block';
-    }
-  }
-  document.addEventListener('click', () => {
-    const dd = document.getElementById('moduleDropdown');
-    if(dd) dd.style.display = 'none';
+  FlowShell.init({ modulo:'PMP', titulo:'PMP — Plano Mestre de Produção', icone:'📋' }).then(() => {
+    const inp = document.getElementById('periodo');
+    inp.value = periodo;
+    inp.onchange = () => { if (!inp.value) return; periodo = inp.value; FlowShell.salvarPeriodo(periodo); carregar(); };
+    FlowShell.aoReceberNotificacao = () => { if (!FlowShell.digitando()) carregar(); };
+    carregar();
   });
 
-
-  // ── Sistema de notificações ──────────────────────────────
-  let _notifAbertas = false;
-
-  function toggleNotif(e) {
-    e.stopPropagation();
-    const p = document.getElementById('notifPainel');
-    _notifAbertas = !_notifAbertas;
-    p.style.display = _notifAbertas ? 'block' : 'none';
-    if (_notifAbertas) carregarNotif();
-  }
-  document.addEventListener('click', () => {
-    if (_notifAbertas) {
-      document.getElementById('notifPainel').style.display = 'none';
-      _notifAbertas = false;
-    }
-  });
-  document.getElementById('notifPainel')?.addEventListener('click', e => e.stopPropagation());
-
-  async function carregarNotif() {
+  async function carregar() {
     try {
-      const r = await fetch('/api/notificacoes', { credentials:'include' });
-      const d = await r.json();
-      renderNotif(d.notificacoes || []);
-    } catch {}
+      const d = await api('/api/pmp?periodo=' + periodo);
+      dados = d.pmp || [];
+      render();
+    } catch (e) { document.getElementById('lista').innerHTML = `<div class="vazio">${esc(e.message)}</div>`; }
   }
 
-  function renderNotif(lista) {
-    const el = document.getElementById('notifLista');
-    if (!lista.length) {
-      el.innerHTML = '<div class="notif-vazia">Sem notificações 🎉</div>';
+  const dia = (iso) => iso.slice(8, 10);
+
+  function render() {
+    const el = document.getElementById('lista');
+    if (!dados.length) {
+      el.innerHTML = `<div class="card"><div class="vazio">Nenhum PMP para ${esc(FlowShell.rotuloMes(periodo))}.<br>Ele é gerado quando um item do PAP é aprovado.</div></div>`;
       return;
     }
-    el.innerHTML = lista.map(n => {
-      const lida  = n.lida;
-      const diff  = Date.now() - new Date(n.criado_em).getTime();
-      const min   = Math.floor(diff/60000);
-      const h     = Math.floor(diff/3600000);
-      const d     = Math.floor(diff/86400000);
-      const tempo = min<1?'agora':min<60?`há ${min}min`:h<24?`há ${h}h`:`há ${d}d`;
-
-      // Botão "Não fui eu" aparece somente em notificações de senha alterada não lidas
-      const btnNaoFuiEu = (n.tipo === 'senha_alterada' && !lida)
-        ? `<button onclick="naoFuiEu(event)" style="margin-top:6px;background:rgba(244,63,94,.12);
-            border:1px solid rgba(244,63,94,.3);color:#f43f5e;padding:4px 10px;border-radius:5px;
-            font-size:11px;cursor:pointer;font-family:'Poppins',sans-serif;">
-            🚨 Não fui eu
-          </button>`
-        : '';
-
-      return `<div class="notif-item ${lida?'':'nao-lida'}" id="notif-${n.id}">
-        <div class="notif-dot ${lida?'lida':''}"></div>
-        <div style="flex:1;">
-          <div class="notif-titulo">${n.titulo}</div>
-          ${n.mensagem ? `<div class="notif-msg">${n.mensagem.replace(/\\n/g,'<br>')}</div>` : ''}
-          <div class="notif-tempo">${tempo}</div>
-          ${btnNaoFuiEu}
-        </div>
-      </div>`;
-    }).join('');
+    el.innerHTML = dados.map(card).join('');
+    dados.forEach(p => atualizarSoma(p.pap_id));
   }
 
-  async function naoFuiEu(e) {
-    e.stopPropagation();
-    const btn = e.target;
-    btn.disabled = true;
-    btn.textContent = 'Enviando...';
-    try {
-      const r = await fetch('/api/senha/nao-fui-eu', {
-        method:'POST', credentials:'include'
-      });
-      const d = await r.json();
-      if (r.ok) {
-        btn.textContent = '✅ Alerta enviado!';
-        btn.style.color = '#22c55e';
-        btn.style.borderColor = '#22c55e';
-        carregarNotif();
-      }
-    } catch {
-      btn.textContent = '⚠️ Erro';
-      btn.disabled = false;
-    }
+  function card(p) {
+    const rasc = p.status === 'RASCUNHO';
+    const semanas = p.semanas.map(s => `
+      <div class="semana">
+        <label>Semana ${s.semana} · ${dia(s.inicio)}–${dia(s.fim)}</label>
+        ${rasc
+          ? `<input class="inp num" type="number" min="0" step="1" value="${s.quantidade}" data-pap="${p.pap_id}" oninput="atualizarSoma(${p.pap_id})">`
+          : `<b>${fmt(s.quantidade)}</b>`}
+      </div>`).join('');
+    const acoes = rasc
+      ? `<button class="btn sm" onclick="igualar(${p.pap_id})">Distribuir igualmente</button>
+         <button class="btn sm primary" onclick="aprovar(${p.pap_id}, this)">Aprovar PMP</button>`
+      : `<button class="btn sm" onclick="reabrir(${p.pap_id}, this)">Reabrir</button>`;
+    return `<div class="card" id="pap-${p.pap_id}" data-total="${p.quantidade_planejada}">
+      <div class="card-head">
+        <span><b>${esc(p.produto)}</b> <span class="muted2">· total do PAP: ${fmt(p.quantidade_planejada)} ${esc(p.unidade_padrao)}</span></span>
+        <span style="display:flex;gap:8px;align-items:center"><span class="pill st-${p.status}">${rasc ? 'Rascunho' : 'Aprovado'}</span>${acoes}</span>
+      </div>
+      <div class="card-body">
+        <div class="semanas">${semanas}</div>
+        ${rasc ? `<div class="soma" id="soma-${p.pap_id}"></div>` : ''}
+      </div></div>`;
   }
 
-  async function marcarLidas() {
-    try {
-      await fetch('/api/notificacoes/marcar-lidas', { method:'POST', credentials:'include' });
-      document.getElementById('sinoBadge').style.display = 'none';
-      carregarNotif();
-
-  async function limparNotif() {
-    if (!confirm("Apagar todas as notificações?")) return;
-    try {
-      await fetch("/api/notificacoes/todas", { method:"DELETE", credentials:"include" });
-      document.getElementById("notifLista").innerHTML = "<p style=\"padding:16px;color:#3a5070;font-size:13px;\">Nenhuma notificação.</p>";
-      const b = document.getElementById("notifCount");
-      if (b) b.style.display = "none";
-    } catch {}
+  function valores(papId) {
+    return [...document.querySelectorAll(`input[data-pap="${papId}"]`)].map(i => Number(i.value || 0));
   }
-    } catch {}
+  function atualizarSoma(papId) {
+    const el = document.getElementById('soma-' + papId);
+    if (!el) return;
+    const total = Number(document.getElementById('pap-' + papId).dataset.total);
+    const soma = Math.round(valores(papId).reduce((a, b) => a + b, 0) * 100) / 100;
+    const ok = Math.abs(soma - total) < 0.005;
+    el.className = 'soma ' + (ok ? 'ok' : 'erro-soma');
+    el.textContent = ok ? `Soma das semanas: ${fmt(soma)} — confere com o PAP`
+      : `Soma das semanas: ${fmt(soma)} — ${soma > total ? 'excede' : 'faltam'} ${fmt(Math.abs(total - soma))} para fechar ${fmt(total)}`;
   }
-
-  async function atualizarBadgeNotif() {
-    try {
-      const r = await fetch('/api/notificacoes/nao-lidas/contagem', { credentials:'include' });
-      const d = await r.json();
-      const badge = document.getElementById('sinoBadge');
-      if (d.total > 0) {
-        badge.textContent = d.total > 9 ? '9+' : d.total;
-        badge.style.display = 'inline-flex';
-      } else {
-        badge.style.display = 'none';
-      }
-    } catch {}
+  function igualar(papId) {
+    const total = Number(document.getElementById('pap-' + papId).dataset.total);
+    const cent = Math.round(total * 100), base = Math.floor(cent / 4), resto = cent - base * 4;
+    document.querySelectorAll(`input[data-pap="${papId}"]`).forEach((inp, i) => { inp.value = (base + (i < resto ? 1 : 0)) / 100; });
+    atualizarSoma(papId);
   }
 
-  atualizarBadgeNotif();
-  setInterval(atualizarBadgeNotif, 30000);
-
-  // ── Conexão SSE para notificações em tempo real ────────────
-  function conectarSSE() {
-    const eventSource = new EventSource('/api/notificacoes/stream', { withCredentials: true });
-    
-    eventSource.addEventListener('message', (e) => {
-      try {
-        const notif = JSON.parse(e.data);
-        console.log('📨 Nova notificação em tempo real:', notif);
-        
-        // Atualiza badge
-        atualizarBadgeNotif();
-        
-        // Se o painel está aberto, recarrega a lista
-        if (_notifAbertas) {
-          carregarNotif();
-        }
-      } catch(err) {
-        console.error('Erro ao processar notificação SSE:', err);
-      }
-    });
-    
-    eventSource.addEventListener('error', (e) => {
-      console.error('Erro na conexão SSE:', e);
-      eventSource.close();
-      // Reconecta após 5 segundos
-      setTimeout(conectarSSE, 5000);
-    });
-    
-    console.log('✅ Conectado ao stream de notificações em tempo real');
+  async function salvar(papId) {
+    await api('/api/pmp/pap/' + papId, { metodo:'PUT', corpo:{ semanas: valores(papId) } });
   }
-  
-  // Conecta ao SSE ao carregar a página
-  conectarSSE();
-
-
-  // ── Sino de Notificações ──────────────────────────────────
-  async function carregarNotificacoes() {
-    try {
-      const r = await fetch('/api/notificacoes', { credentials:'include' });
-      const d = await r.json();
-      const lista = d.notificacoes || [];
-      const count = lista.filter(n => !n.lida).length;
-      const el = document.getElementById('notifCount');
-      if (el) { el.textContent = count; el.style.display = count > 0 ? 'block' : 'none'; }
-      const ul = document.getElementById('notifLista');
-      if (!ul) return;
-      if (!lista.length) {
-        ul.innerHTML = '<div class="notif-empty">Nenhuma notificação</div>'; return;
-      }
-      ul.innerHTML = lista.map(n => `
-        <div class="notif-item ${n.lida ? '' : 'nao-lida'}">
-          <div class="notif-dot ${n.lida ? 'lida' : ''}"></div>
-          <div class="notif-body">
-            <div class="notif-titulo">${n.titulo}</div>
-            ${n.mensagem ? `<div class="notif-msg">${n.mensagem}</div>` : ''}
-            <div class="notif-time">${new Date(n.criado_em).toLocaleString('pt-BR')}</div>
-          </div>
-        </div>`).join('');
-    } catch {}
+  function aprovar(papId, btn) {
+    executar(btn, async () => { await salvar(papId); return api(`/api/pmp/pap/${papId}/aprovar`, { metodo:'POST' }); },
+      d => `PMP aprovado. MRP recalculado (${d.mrp.criadas} sugestão(ões) nova(s)).`, carregar);
   }
-
-  async function marcarLidas() {
-    try {
-      await fetch('/api/notificacoes/marcar-lidas', { method:'POST', credentials:'include' });
-      document.getElementById('notifCount').style.display = 'none';
-      carregarNotificacoes();
-
-  async function limparNotif() {
-    if (!confirm("Apagar todas as notificações?")) return;
-    try {
-      await fetch("/api/notificacoes/todas", { method:"DELETE", credentials:"include" });
-      document.getElementById("notifLista").innerHTML = "<p style=\"padding:16px;color:#3a5070;font-size:13px;\">Nenhuma notificação.</p>";
-      const b = document.getElementById("notifCount");
-      if (b) b.style.display = "none";
-    } catch {}
-  }
-    } catch {}
-  }
-
-  function toggleNotif(e) {
-    e.stopPropagation();
-    const p = document.getElementById('notifPanel');
-    const open = p.style.display === 'block';
-    document.querySelectorAll('.notif-panel').forEach(el => el.style.display='none');
-    if (!open) { p.style.display='block'; marcarLidas(); }
-  }
-  document.addEventListener('click', () => {
-    document.querySelectorAll('.notif-panel').forEach(el => el.style.display='none');
-  });
-
-  // Carrega notificações ao entrar e a cada 30s
-  carregarNotificacoes();
-  setInterval(carregarNotificacoes, 30000);
-
+  function reabrir(papId, btn) { executar(btn, () => api(`/api/pmp/pap/${papId}/reabrir`, { metodo:'POST' }), 'PMP reaberto. MRP recalculado.', carregar); }
 </script>
 </body>
 </html>
