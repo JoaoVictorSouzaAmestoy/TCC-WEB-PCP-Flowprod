@@ -5,347 +5,234 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>FlowProd — Estoque</title>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-<style>
-  * { box-sizing:border-box; margin:0; padding:0; }
-  body { background:#080d14; color:#e8edf5; font-family:'Poppins',sans-serif; min-height:100vh; display:flex; flex-direction:column; }
-  .topbar { background:#0d1520; border-bottom:1px solid #1a2740; padding:0 32px; height:60px; display:flex; align-items:center; justify-content:space-between; }
-  .topbar-left { display:flex; align-items:center; gap:12px; }
-  .logo { font-size:18px; font-weight:700; color:#2b7fff; letter-spacing:1px; }
-  .divider { width:1px; height:24px; background:#1a2740; }
-  .page-title { font-size:14px; color:#6b82a0; font-weight:500; }
-  .topbar-right { display:flex; align-items:center; gap:16px; }
-  .user-info { display:flex; align-items:center; gap:8px; }
-  .user-avatar { width:32px; height:32px; border-radius:50%; background:linear-gradient(135deg,#c2790a,#f59e0b); display:flex; align-items:center; justify-content:center; font-size:13px; font-weight:600; }
-  .user-name { font-size:13px; color:#a0b0c8; }
-  .btn-logout { background:none; border:1px solid #1a2740; color:#6b82a0; padding:6px 14px; border-radius:6px; font-size:12px; cursor:pointer; font-family:'Poppins',sans-serif; transition:.2s; }
-  .btn-logout:hover { border-color:#f59e0b; color:#f59e0b; }
-
-  #moduleSwitcher { position:relative; display:none; align-items:center; gap:0; background:#080d14; border:1px solid #1a2740; border-radius:8px; }
-  .mod-current { display:flex; align-items:center; gap:6px; padding:4px 10px; font-size:13px; color:#a0b0c8; }
-  .mod-arrow-btn { background:none; border:none; border-left:1px solid #1a2740; color:#6b82a0; cursor:pointer; padding:4px 8px; font-size:13px; }
-  .mod-arrow-btn:hover { color:#f59e0b; background:#0a1220; }
-  .mod-dropdown { display:none; position:absolute; top:calc(100% + 6px); right:0; background:#0d1520; border:1px solid #1a2740; border-radius:10px; min-width:180px; z-index:50; overflow:hidden; box-shadow:0 8px 24px rgba(0,0,0,.4); }
-  .mod-item { display:flex; align-items:center; gap:10px; padding:11px 16px; font-size:13px; color:#e8edf5; text-decoration:none; }
-  .mod-item:hover { background:#1a2740; color:#f59e0b; }
-
-  .notif-wrap { position:relative; }
-  .notif-bell { background:none; border:1px solid #1a2740; border-radius:8px; color:#6b82a0; cursor:pointer; padding:6px 10px; font-size:16px; position:relative; }
-  .notif-bell:hover { border-color:#f59e0b; color:#f59e0b; }
-  .notif-count { position:absolute; top:-6px; right:-6px; background:#f43f5e; color:#fff; font-size:10px; font-weight:700; width:18px; height:18px; border-radius:50%; display:none; align-items:center; justify-content:center; border:2px solid #080d14; }
-  .notif-panel { display:none; position:absolute; top:calc(100% + 8px); right:0; width:320px; background:#0d1520; border:1px solid #1a2740; border-radius:12px; z-index:200; box-shadow:0 12px 40px rgba(0,0,0,.5); overflow:hidden; }
-  .notif-header { display:flex; align-items:center; justify-content:space-between; padding:13px 16px; border-bottom:1px solid #1a2740; gap:10px; }
-  .notif-header span { font-size:13px; font-weight:600; }
-  .notif-mark { background:none; border:none; color:#f59e0b; cursor:pointer; font-size:11px; font-family:'Poppins',sans-serif; }
-  .notif-mark:hover { text-decoration:underline; }
-  #notifLista { max-height:300px; overflow-y:auto; }
-  .notif-item { padding:12px 16px; border-bottom:1px solid #0d1825; display:flex; gap:10px; }
-  .notif-item.nao-lida { background:#0a1422; }
-  .notif-dot { width:7px; height:7px; border-radius:50%; background:#f59e0b; flex-shrink:0; margin-top:5px; }
-  .notif-dot.lida { background:transparent; }
-  .notif-titulo { font-size:13px; font-weight:600; }
-  .notif-msg { font-size:12px; color:#6b82a0; margin-top:2px; line-height:1.5; }
-  .notif-tempo { font-size:11px; color:#3a5070; margin-top:4px; }
-  .notif-vazia { padding:24px; text-align:center; font-size:13px; color:#3a5070; }
-
-  .main { flex:1; padding:28px 32px; max-width:900px; width:100%; margin:0 auto; }
-  .header-titulo { font-size:22px; font-weight:700; display:flex; align-items:center; gap:10px; }
-  .header-sub { font-size:13px; color:#4a6080; margin-top:4px; margin-bottom:24px; }
-
-  .form-card { background:#0d1520; border:1px solid #1a2740; border-radius:12px; padding:20px; margin-bottom:28px; }
-  .form-card h2 { font-size:14px; margin-bottom:14px; color:#a0b0c8; }
-  .form-row { display:flex; gap:12px; flex-wrap:wrap; }
-  .form-group { flex:1; min-width:160px; }
-  .form-group label { display:block; font-size:12px; color:#a0b0c8; margin-bottom:6px; font-weight:600; }
-  .form-group input, .form-group select {
-    width:100%; background:#080d14; border:1px solid #1a2740; color:#e8edf5;
-    padding:10px 12px; border-radius:8px; font-family:'Poppins',sans-serif; font-size:13px;
-  }
-  .form-group input:focus, .form-group select:focus { outline:none; border-color:#f59e0b; }
-  .form-erro { font-size:12px; color:#f43f5e; margin-top:10px; display:none; }
-  .btn-salvar {
-    background:linear-gradient(135deg,#c2790a,#f59e0b); border:none; color:#080d14; padding:10px 22px;
-    border-radius:8px; font-family:'Poppins',sans-serif; font-size:13px; font-weight:700; cursor:pointer; margin-top:14px;
-  }
-  .btn-salvar:hover { opacity:.9; }
-  .btn-salvar:disabled { opacity:.5; cursor:not-allowed; }
-
-  .produto-card { background:#0d1520; border:1px solid #1a2740; border-radius:10px; padding:14px 18px; margin-bottom:10px; display:flex; align-items:center; justify-content:space-between; gap:14px; flex-wrap:wrap; }
-  .produto-info { display:flex; align-items:center; gap:12px; flex-wrap:wrap; }
-  .produto-nome { font-size:14px; font-weight:600; }
-  .produto-meta { font-size:12px; color:#6b82a0; }
-  .tipo-pill { font-size:10px; font-weight:700; letter-spacing:.5px; text-transform:uppercase; padding:4px 10px; border-radius:20px; }
-  .tipo-ACABADO { background:rgba(34,197,94,.12); color:#22c55e; border:1px solid rgba(34,197,94,.25); }
-  .tipo-MATERIA_PRIMA { background:rgba(6,182,212,.12); color:#06b6d4; border:1px solid rgba(6,182,212,.25); }
-  .ativo-pill { font-size:10px; font-weight:700; padding:4px 10px; border-radius:20px; }
-  .ativo-true { background:rgba(34,197,94,.08); color:#4a9c6d; }
-  .ativo-false { background:rgba(244,63,94,.08); color:#a05060; }
-  .btn-toggle {
-    background:#080d14; border:1px solid #1a2740; color:#e8edf5; font-family:'Poppins',sans-serif;
-    font-size:12px; font-weight:600; padding:7px 14px; border-radius:8px; cursor:pointer;
-  }
-  .btn-toggle:hover { border-color:#f59e0b; color:#f59e0b; }
-  .vazio { text-align:center; color:#3a5070; font-size:13px; padding:40px 0; }
-</style>
+<link rel="stylesheet" href="/css/flowprod-app.css">
+<style>:root { --accent:#f59e0b; --accent2:#c2790a; }</style>
 </head>
 <body>
-<div class="topbar">
-  <div class="topbar-left">
-    <span class="logo">FlowProd</span>
-    <div class="divider"></div>
-    <span class="page-title">Estoque</span>
-  </div>
-  <div class="topbar-right">
-    <div class="notif-wrap">
-      <button class="notif-bell" onclick="toggleNotif(event)" title="Notificações">
-        🔔
-        <span class="notif-count" id="notifCount"></span>
-      </button>
-      <div class="notif-panel" id="notifPanel">
-        <div class="notif-header">
-          <span>🔔 Notificações</span>
-          <button class="notif-mark" onclick="marcarLidas()">Marcar lidas</button>
-        </div>
-        <div id="notifLista"></div>
-      </div>
-    </div>
-    <div id="moduleSwitcher">
-      <div class="mod-current"><span>📦 ESTOQUE</span></div>
-      <button class="mod-arrow-btn" onclick="toggleDropdown(event)" title="Trocar módulo">▾</button>
-      <div class="mod-dropdown" id="moduleDropdown"></div>
-    </div>
-    <div class="user-info">
-      <div class="user-avatar" id="avatar">?</div>
-      <span class="user-name" id="userName">Carregando...</span>
-    </div>
-    <button class="btn-logout" onclick="logout()">Sair</button>
-  </div>
-</div>
+<div id="shell-topbar"></div>
 
 <div class="main">
-  <div class="header-titulo">📦 Cadastro de Produtos</div>
-  <div class="header-sub">Produtos ACABADO ficam disponíveis no catálogo do cliente. MATERIA_PRIMA nunca aparece pro cliente.</div>
-
-  <div class="form-card">
-    <h2>Novo produto</h2>
-    <form id="formProduto" onsubmit="salvarProduto(event)">
-      <div class="form-row">
-        <div class="form-group">
-          <label>Nome</label>
-          <input type="text" id="fNome" required maxlength="200" placeholder="Ex: Motor A">
-        </div>
-        <div class="form-group">
-          <label>Tipo</label>
-          <select id="fTipo" required>
-            <option value="ACABADO">Acabado (vendável)</option>
-            <option value="MATERIA_PRIMA">Matéria-prima</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label>Unidade padrão</label>
-          <input type="text" id="fUnidade" required maxlength="20" placeholder="Ex: UN, KG, M">
-        </div>
-      </div>
-      <div class="form-erro" id="formErro"></div>
-      <button type="submit" class="btn-salvar" id="btnSalvar">Cadastrar produto</button>
-    </form>
+  <div class="page-head">
+    <div class="page-h1">📦 Estoque</div>
+    <div class="page-sub">Cadastro mestre de produtos, saldo em estoque e estrutura de produto (BOM). Saldo e BOM alimentam o PAP e o MRP — qualquer mudança recalcula as necessidades automaticamente.</div>
   </div>
 
-  <div id="listaProdutos"><div class="vazio">Carregando produtos...</div></div>
+  <div class="tabs">
+    <button class="tab active" data-tab="produtos" onclick="aba('produtos')">Produtos</button>
+    <button class="tab" data-tab="saldos" onclick="aba('saldos')">Saldos e movimentações</button>
+    <button class="tab" data-tab="bom" onclick="aba('bom')">Estrutura (BOM)</button>
+  </div>
+
+  <!-- ── Produtos ── -->
+  <section id="aba-produtos">
+    <div class="hint">Produtos ACABADO ficam disponíveis no catálogo do cliente. MATERIA_PRIMA nunca aparece para o cliente.</div>
+    <div class="card">
+      <div class="card-head">Novo produto</div>
+      <div class="form-inline">
+        <div class="field" style="flex:1;min-width:200px"><label>Nome</label><input type="text" id="fNome" maxlength="200" placeholder="Ex: Motor A"></div>
+        <div class="field"><label>Tipo</label><select id="fTipo"><option value="ACABADO">Acabado (vendável)</option><option value="MATERIA_PRIMA">Matéria-prima</option></select></div>
+        <div class="field"><label>Unidade padrão</label><input type="text" id="fUnidade" maxlength="20" placeholder="UN, KG, M" style="width:130px"></div>
+        <button class="btn primary" id="btnProduto" onclick="salvarProduto(this)">Cadastrar produto</button>
+      </div>
+      <div class="erro" id="erroProduto" style="margin:0 20px 16px"></div>
+    </div>
+    <div class="card"><div class="tbl-wrap" id="listaProdutos"><div class="vazio">Carregando...</div></div></div>
+  </section>
+
+  <!-- ── Saldos ── -->
+  <section id="aba-saldos" style="display:none">
+    <div class="card">
+      <div class="card-head">Registrar movimentação</div>
+      <div class="form-inline">
+        <div class="field"><label>Produto</label><select id="mProduto" style="min-width:220px"></select></div>
+        <div class="field"><label>Tipo</label>
+          <select id="mTipo" onchange="rotuloQtd()"><option value="ENTRADA">Entrada</option><option value="SAIDA">Saída</option><option value="AJUSTE">Ajuste (definir saldo)</option></select></div>
+        <div class="field"><label id="lblQtd">Quantidade</label><input type="number" id="mQtd" min="0" step="any" style="width:130px"></div>
+        <div class="field" style="flex:1;min-width:180px"><label>Motivo</label><input type="text" id="mMotivo" maxlength="200" placeholder="Ex: recebimento NF 123"></div>
+        <button class="btn primary" onclick="movimentar(this)">Registrar</button>
+      </div>
+    </div>
+    <div class="card"><div class="card-head">Saldo atual</div><div class="tbl-wrap" id="tabelaSaldos"><div class="vazio">Carregando...</div></div></div>
+    <div class="card">
+      <div class="card-head"><span>Histórico de movimentações</span>
+        <select class="inp" id="hProduto" onchange="carregarHistorico()"><option value="">Todos os produtos</option></select></div>
+      <div class="tbl-wrap" id="tabelaHistorico"></div>
+    </div>
+  </section>
+
+  <!-- ── BOM ── -->
+  <section id="aba-bom" style="display:none">
+    <div class="hint">Defina, para cada produto acabado, quanto de cada matéria-prima é consumido por unidade produzida. O MRP usa essa estrutura para calcular as compras.</div>
+    <div id="listaBom"><div class="vazio">Carregando...</div></div>
+  </section>
 </div>
 
+<script src="/js/flowprod-shell.js"></script>
 <script>
-  fetch('/api/me', { credentials:'include', headers: { 'Accept': 'application/json' } })
-    .then(r => { if(!r.ok) throw new Error(); return r.json(); })
-    .then(d => {
-      const u = d.usuario;
-      if(!u.funcoes || (!u.funcoes.includes('ESTOQUE') && !u.funcoes.includes('ADMIN'))) { window.location.href = '/'; return; }
-      document.getElementById('userName').textContent = u.nome;
-      document.getElementById('avatar').textContent = u.nome.charAt(0).toUpperCase();
-      renderSwitcher(u.funcoes);
-      carregarProdutos();
-    })
-    .catch(() => window.location.href = '/');
+  const { esc, fmt, api, toast, executar } = FlowShell;
+  let produtos = [], saldos = [], bom = [];
+  let abaAtual = 'produtos';
 
-  async function logout() {
-    await fetch('/api/logout', { method:'POST', credentials:'include' });
-    window.location.href = '/';
-  }
-
-  const DEST  = { COMERCIAL:'/comercial.html', FORECAST:'/forecast.html', PAP:'/pap.html', PMP:'/pmp.html', MRP:'/mrp.html', ESTOQUE:'/estoque.html', COMPRA_PRODUCAO:'/compra-producao.html', ADMIN:'/admin.html' };
-  const ICON  = { COMERCIAL:'🤝', FORECAST:'📊', PAP:'📐', PMP:'📋', MRP:'⚙️', ESTOQUE:'📦', COMPRA_PRODUCAO:'🏭', ADMIN:'🛠️' };
-  const LABEL = { COMERCIAL:'Comercial', FORECAST:'Forecast', PAP:'PAP', PMP:'PMP', MRP:'MRP', ESTOQUE:'Estoque', COMPRA_PRODUCAO:'Compra/Produção', ADMIN:'Admin' };
-  let _outrosFuncoes = [];
-
-  function renderSwitcher(funcoes) {
-    _outrosFuncoes = (funcoes||[]).filter(f => f !== 'ESTOQUE');
-    const sw = document.getElementById('moduleSwitcher');
-    if (!sw) return;
-    if (_outrosFuncoes.length === 0) { sw.style.display = 'none'; return; }
-    sw.style.display = 'flex';
-  }
-  function toggleDropdown(e) {
-    e.stopPropagation();
-    const dd = document.getElementById('moduleDropdown');
-    const open = dd.style.display === 'block';
-    dd.style.display = 'none';
-    if (!open) {
-      dd.innerHTML = _outrosFuncoes.map(f => `<a class="mod-item" href="${DEST[f]||'/'}">${ICON[f]||'🔧'} ${LABEL[f]||f}</a>`).join('');
-      dd.style.display = 'block';
-    }
-  }
-  document.addEventListener('click', () => {
-    const dd = document.getElementById('moduleDropdown');
-    if(dd) dd.style.display = 'none';
+  FlowShell.init({ modulo:'ESTOQUE', titulo:'Estoque', icone:'📦' }).then(() => {
+    FlowShell.aoReceberNotificacao = () => { if (!FlowShell.digitando()) recarregarAba(); };
+    recarregarAba();
   });
 
-  let _notifAbertas = false;
-  function toggleNotif(e) {
-    e.stopPropagation();
-    const p = document.getElementById('notifPanel');
-    _notifAbertas = !_notifAbertas;
-    p.style.display = _notifAbertas ? 'block' : 'none';
-    if (_notifAbertas) carregarNotif();
+  function aba(nome) {
+    abaAtual = nome;
+    document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.dataset.tab === nome));
+    ['produtos', 'saldos', 'bom'].forEach(n => document.getElementById('aba-' + n).style.display = n === nome ? 'block' : 'none');
+    recarregarAba();
   }
-  document.addEventListener('click', () => {
-    if (_notifAbertas) { document.getElementById('notifPanel').style.display = 'none'; _notifAbertas = false; }
-  });
-  document.getElementById('notifPanel')?.addEventListener('click', e => e.stopPropagation());
+  function recarregarAba() {
+    if (abaAtual === 'produtos') return carregarProdutos();
+    if (abaAtual === 'saldos')   return carregarSaldos();
+    return carregarBom();
+  }
 
-  async function carregarNotif() {
-    try {
-      const r = await fetch('/api/notificacoes', { credentials:'include' });
-      const d = await r.json();
-      renderNotif(d.notificacoes || []);
-    } catch {}
-  }
-  function renderNotif(lista) {
-    const el = document.getElementById('notifLista');
-    if (!lista.length) { el.innerHTML = '<div class="notif-vazia">Sem notificações 🎉</div>'; return; }
-    el.innerHTML = lista.map(n => {
-      const lida = n.lida;
-      const diff = Date.now() - new Date(n.criado_em).getTime();
-      const min = Math.floor(diff/60000), h = Math.floor(diff/3600000), d = Math.floor(diff/86400000);
-      const tempo = min<1?'agora':min<60?`há ${min}min`:h<24?`há ${h}h`:`há ${d}d`;
-      return `<div class="notif-item ${lida?'':'nao-lida'}">
-        <div class="notif-dot ${lida?'lida':''}"></div>
-        <div style="flex:1;">
-          <div class="notif-titulo">${n.titulo}</div>
-          ${n.mensagem ? `<div class="notif-msg">${n.mensagem.replace(/\\n/g,'<br>')}</div>` : ''}
-          <div class="notif-tempo">${tempo}</div>
-        </div>
-      </div>`;
-    }).join('');
-  }
-  async function marcarLidas() {
-    try {
-      await fetch('/api/notificacoes/marcar-lidas', { method:'POST', credentials:'include' });
-      document.getElementById('notifCount').style.display = 'none';
-      carregarNotif();
-    } catch {}
-  }
-  async function atualizarBadgeNotif() {
-    try {
-      const r = await fetch('/api/notificacoes/nao-lidas/contagem', { credentials:'include' });
-      const d = await r.json();
-      const badge = document.getElementById('notifCount');
-      if (d.total > 0) { badge.textContent = d.total > 9 ? '9+' : d.total; badge.style.display = 'inline-flex'; }
-      else badge.style.display = 'none';
-    } catch {}
-  }
-  atualizarBadgeNotif();
-  setInterval(atualizarBadgeNotif, 30000);
-
-  function conectarSSE() {
-    const es = new EventSource('/api/notificacoes/stream', { withCredentials: true });
-    es.addEventListener('message', () => {
-      atualizarBadgeNotif();
-      if (_notifAbertas) carregarNotif();
-    });
-    es.addEventListener('error', () => { es.close(); setTimeout(conectarSSE, 5000); });
-  }
-  conectarSSE();
-
-  // ── Produtos ──────────────────────────────────────────────
-  let _produtos = [];
-
+  // ── Produtos ───────────────────────────────────────────────
   async function carregarProdutos() {
-    const el = document.getElementById('listaProdutos');
-    try {
-      const r = await fetch('/api/produtos', { credentials:'include' });
-      if (!r.ok) throw new Error();
-      const d = await r.json();
-      _produtos = d.produtos || [];
-      renderProdutos();
-    } catch {
-      el.innerHTML = '<div class="vazio">Erro ao carregar produtos.</div>';
-    }
+    try { produtos = (await api('/api/produtos')).produtos || []; renderProdutos(); }
+    catch (e) { document.getElementById('listaProdutos').innerHTML = `<div class="vazio">${esc(e.message)}</div>`; }
   }
-
   function renderProdutos() {
     const el = document.getElementById('listaProdutos');
-    if (!_produtos.length) { el.innerHTML = '<div class="vazio">Nenhum produto cadastrado ainda.</div>'; return; }
-    el.innerHTML = _produtos.map(p => `
-      <div class="produto-card">
-        <div class="produto-info">
-          <div>
-            <div class="produto-nome">${p.nome}</div>
-            <div class="produto-meta">Unidade: ${p.unidade_padrao}</div>
-          </div>
-          <span class="tipo-pill tipo-${p.tipo}">${p.tipo === 'ACABADO' ? 'Acabado' : 'Matéria-prima'}</span>
-          <span class="ativo-pill ativo-${p.ativo}">${p.ativo ? 'Ativo' : 'Inativo'}</span>
-        </div>
-        <button class="btn-toggle" onclick="alternarAtivo(${p.id}, ${!p.ativo}, this)">
-          ${p.ativo ? 'Desativar' : 'Ativar'}
-        </button>
-      </div>`).join('');
+    if (!produtos.length) { el.innerHTML = '<div class="vazio">Nenhum produto cadastrado ainda.</div>'; return; }
+    el.innerHTML = `<table class="tbl"><thead><tr><th>Produto</th><th>Tipo</th><th>Unidade</th><th>Situação</th><th></th></tr></thead><tbody>
+      ${produtos.map(p => `<tr>
+        <td><b>${esc(p.nome)}</b></td>
+        <td><span class="pill tipo-${p.tipo}">${p.tipo === 'ACABADO' ? 'Acabado' : 'Matéria-prima'}</span></td>
+        <td class="muted">${esc(p.unidade_padrao)}</td>
+        <td><span class="pill ${p.ativo ? 'st-APROVADO' : 'st-CANCELADA'}">${p.ativo ? 'Ativo' : 'Inativo'}</span></td>
+        <td><div class="acoes"><button class="btn sm" onclick="alternarAtivo(${p.id}, ${!p.ativo}, this)">${p.ativo ? 'Desativar' : 'Ativar'}</button></div></td></tr>`).join('')}
+      </tbody></table>`;
   }
-
-  async function alternarAtivo(id, novoAtivo, btn) {
+  function alternarAtivo(id, ativo, btn) {
+    executar(btn, () => api('/api/produtos/' + id, { metodo:'PATCH', corpo:{ ativo } }), ativo ? 'Produto ativado.' : 'Produto desativado.', carregarProdutos);
+  }
+  async function salvarProduto(btn) {
+    const erro = document.getElementById('erroProduto');
+    erro.style.display = 'none';
+    const corpo = {
+      nome: document.getElementById('fNome').value.trim(),
+      tipo: document.getElementById('fTipo').value,
+      unidade_padrao: document.getElementById('fUnidade').value.trim(),
+    };
     btn.disabled = true;
     try {
-      const r = await fetch(`/api/produtos/${id}`, {
-        method:'PATCH', credentials:'include',
-        headers:{'Content-Type':'application/json'},
-        body: JSON.stringify({ ativo: novoAtivo })
-      });
-      if (!r.ok) throw new Error();
+      await api('/api/produtos', { metodo:'POST', corpo });
+      document.getElementById('fNome').value = ''; document.getElementById('fUnidade').value = '';
+      toast('Produto cadastrado.', 'ok');
       await carregarProdutos();
-    } catch {
-      alert('Erro ao atualizar produto.');
-      btn.disabled = false;
-    }
+    } catch (e) { erro.textContent = e.message; erro.style.display = 'block'; }
+    btn.disabled = false;
   }
 
-  async function salvarProduto(e) {
-    e.preventDefault();
-    const erroEl = document.getElementById('formErro');
-    const btn = document.getElementById('btnSalvar');
-    erroEl.style.display = 'none';
-
-    const nome = document.getElementById('fNome').value.trim();
-    const tipo = document.getElementById('fTipo').value;
-    const unidade_padrao = document.getElementById('fUnidade').value.trim();
-
-    btn.disabled = true;
-    btn.textContent = 'Salvando...';
+  // ── Saldos e movimentações ─────────────────────────────────
+  async function carregarSaldos() {
     try {
-      const r = await fetch('/api/produtos', {
-        method:'POST', credentials:'include',
-        headers:{'Content-Type':'application/json'},
-        body: JSON.stringify({ nome, tipo, unidade_padrao })
-      });
-      const d = await r.json();
-      if (!r.ok) throw new Error(d.erro || 'Erro ao salvar.');
-      document.getElementById('formProduto').reset();
-      await carregarProdutos();
-    } catch (err) {
-      erroEl.textContent = err.message;
-      erroEl.style.display = 'block';
-    } finally {
-      btn.disabled = false;
-      btn.textContent = 'Cadastrar produto';
-    }
+      saldos = (await api('/api/estoque')).estoque || [];
+      const opcoes = saldos.map(s => `<option value="${s.produto_id}">${esc(s.produto)} (${esc(s.unidade_padrao)})</option>`).join('');
+      const sel = document.getElementById('mProduto'), selH = document.getElementById('hProduto');
+      const atual = sel.value, atualH = selH.value;
+      sel.innerHTML = opcoes;
+      selH.innerHTML = '<option value="">Todos os produtos</option>' + opcoes;
+      if (atual) sel.value = atual;
+      if (atualH) selH.value = atualH;
+      renderSaldos();
+      carregarHistorico();
+    } catch (e) { document.getElementById('tabelaSaldos').innerHTML = `<div class="vazio">${esc(e.message)}</div>`; }
   }
+  function renderSaldos() {
+    const el = document.getElementById('tabelaSaldos');
+    if (!saldos.length) { el.innerHTML = '<div class="vazio">Cadastre produtos para controlar o estoque.</div>'; return; }
+    el.innerHTML = `<table class="tbl"><thead><tr><th>Produto</th><th>Tipo</th><th class="r">Saldo</th><th></th></tr></thead><tbody>
+      ${saldos.map(s => `<tr>
+        <td><b>${esc(s.produto)}</b></td>
+        <td><span class="pill tipo-${s.tipo}">${s.tipo === 'ACABADO' ? 'Acabado' : 'Matéria-prima'}</span></td>
+        <td class="r"><b>${fmt(s.saldo)}</b> <span class="muted2">${esc(s.unidade_padrao)}</span></td>
+        <td><div class="acoes"><button class="btn sm" onclick="escolher(${s.produto_id})">Movimentar</button></div></td></tr>`).join('')}
+      </tbody></table>`;
+  }
+  function escolher(id) {
+    document.getElementById('mProduto').value = id;
+    document.getElementById('mQtd').focus();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+  function rotuloQtd() {
+    document.getElementById('lblQtd').textContent = document.getElementById('mTipo').value === 'AJUSTE' ? 'Novo saldo' : 'Quantidade';
+  }
+  function movimentar(btn) {
+    const corpo = {
+      produto_id: document.getElementById('mProduto').value,
+      tipo: document.getElementById('mTipo').value,
+      quantidade: document.getElementById('mQtd').value,
+      motivo: document.getElementById('mMotivo').value.trim() || undefined,
+    };
+    if (!corpo.produto_id) { toast('Selecione um produto.', 'erro'); return; }
+    if (corpo.quantidade === '') { toast('Informe a quantidade.', 'erro'); return; }
+    executar(btn, () => api('/api/estoque/movimentar', { metodo:'POST', corpo }),
+      d => `Saldo atualizado: ${fmt(d.saldo_anterior)} → ${fmt(d.saldo_atual)}.`,
+      async () => { document.getElementById('mQtd').value = ''; document.getElementById('mMotivo').value = ''; await carregarSaldos(); btn.disabled = false; });
+  }
+  async function carregarHistorico() {
+    const el = document.getElementById('tabelaHistorico');
+    try {
+      const pid = document.getElementById('hProduto').value;
+      const d = await api('/api/estoque/movimentacoes' + (pid ? '?produto_id=' + pid : ''));
+      const m = d.movimentacoes || [];
+      if (!m.length) { el.innerHTML = '<div class="vazio">Nenhuma movimentação registrada.</div>'; return; }
+      el.innerHTML = `<table class="tbl"><thead><tr><th>Data</th><th>Produto</th><th>Tipo</th><th class="r">Variação</th><th class="r">Saldo após</th><th>Motivo / origem</th></tr></thead><tbody>
+        ${m.map(x => `<tr>
+          <td class="muted2">${new Date(x.criado_em).toLocaleString('pt-BR')}</td>
+          <td>${esc(x.produto)}</td>
+          <td>${x.tipo === 'ENTRADA' ? 'Entrada' : x.tipo === 'SAIDA' ? 'Saída' : 'Ajuste'}</td>
+          <td class="r" style="color:${x.delta > 0 ? 'var(--ok)' : 'var(--bad)'}">${x.delta > 0 ? '+' : ''}${fmt(x.delta)}</td>
+          <td class="r">${fmt(x.saldo_apos)}</td>
+          <td class="muted2">${esc(x.motivo || '')}${x.origem === 'COMPRA_PRODUCAO' ? ' · automático' : ''}${x.usuario ? ' · ' + esc(x.usuario) : ''}</td></tr>`).join('')}
+        </tbody></table>`;
+    } catch (e) { el.innerHTML = `<div class="vazio">${esc(e.message)}</div>`; }
+  }
+
+  // ── BOM ────────────────────────────────────────────────────
+  async function carregarBom() {
+    try {
+      const [p, b] = await Promise.all([api('/api/produtos'), api('/api/bom')]);
+      produtos = p.produtos || []; bom = b.bom || [];
+      renderBom();
+    } catch (e) { document.getElementById('listaBom').innerHTML = `<div class="vazio">${esc(e.message)}</div>`; }
+  }
+  function renderBom() {
+    const el = document.getElementById('listaBom');
+    const acabados = produtos.filter(p => p.tipo === 'ACABADO' && p.ativo);
+    const mps = produtos.filter(p => p.tipo === 'MATERIA_PRIMA' && p.ativo);
+    if (!acabados.length) { el.innerHTML = '<div class="card"><div class="vazio">Cadastre ao menos um produto acabado.</div></div>'; return; }
+    el.innerHTML = acabados.map(a => {
+      const linhas = bom.filter(l => l.produto_pai_id === a.id);
+      const usados = new Set(linhas.map(l => l.componente_id));
+      const livres = mps.filter(m => !usados.has(m.id));
+      const corpo = linhas.length ? `<table class="tbl"><thead><tr><th>Matéria-prima</th><th class="r">Quantidade por unidade</th><th></th></tr></thead><tbody>
+        ${linhas.map(l => `<tr><td><b>${esc(l.componente)}</b></td>
+          <td class="r"><input class="inp num" type="number" min="0" step="any" value="${l.quantidade_por_unidade}" onchange="editarBom(${l.id}, this)"> <span class="muted2">${esc(l.unidade_componente)}</span></td>
+          <td><div class="acoes"><button class="btn sm danger" onclick="removerBom(${l.id}, this)">Remover</button></div></td></tr>`).join('')}
+        </tbody></table>` : '<div class="vazio" style="padding:20px">Sem componentes — o MRP não calcula compras para este produto.</div>';
+      const add = livres.length ? `<div class="form-inline" style="border-top:1px solid var(--line)">
+          <div class="field"><label>Adicionar matéria-prima</label><select id="bc-${a.id}" style="min-width:200px">${livres.map(m => `<option value="${m.id}">${esc(m.nome)} (${esc(m.unidade_padrao)})</option>`).join('')}</select></div>
+          <div class="field"><label>Qtd por unidade</label><input type="number" id="bq-${a.id}" min="0" step="any" style="width:130px"></div>
+          <button class="btn sm primary" onclick="adicionarBom(${a.id}, this)">Adicionar</button></div>` : '';
+      return `<div class="card"><div class="card-head"><span><b>${esc(a.nome)}</b> <span class="muted2">· ${linhas.length} componente(s)</span></span></div>${corpo}${add}</div>`;
+    }).join('');
+  }
+  function adicionarBom(paiId, btn) {
+    const corpo = { produto_pai_id: paiId, componente_id: document.getElementById('bc-' + paiId).value, quantidade_por_unidade: document.getElementById('bq-' + paiId).value };
+    if (corpo.quantidade_por_unidade === '') { toast('Informe a quantidade por unidade.', 'erro'); return; }
+    executar(btn, () => api('/api/bom', { metodo:'POST', corpo }), 'Componente adicionado. MRP recalculado.', carregarBom);
+  }
+  function editarBom(id, input) {
+    if (input.value === '' || !(Number(input.value) > 0)) { toast('A quantidade deve ser maior que zero.', 'erro'); carregarBom(); return; }
+    executar(null, () => api('/api/bom/' + id, { metodo:'PATCH', corpo:{ quantidade_por_unidade: Number(input.value) } }), 'BOM atualizado. MRP recalculado.', carregarBom);
+  }
+  function removerBom(id, btn) { if (confirm('Remover este componente do BOM?')) executar(btn, () => api('/api/bom/' + id, { metodo:'DELETE' }), 'Componente removido. MRP recalculado.', carregarBom); }
 </script>
 </body>
 </html>
