@@ -11,10 +11,15 @@ DROP TABLE IF EXISTS logs_admin              CASCADE;
 DROP TABLE IF EXISTS convites                CASCADE;
 DROP TABLE IF EXISTS solicitacoes_senha      CASCADE;
 DROP TABLE IF EXISTS solicitacoes_executor   CASCADE;
+DROP TABLE IF EXISTS compra_producao         CASCADE;
 DROP TABLE IF EXISTS ordens_producao         CASCADE;
 DROP TABLE IF EXISTS mrp                     CASCADE;
-DROP TABLE IF EXISTS estoque                 CASCADE;
+DROP TABLE IF EXISTS pmp                     CASCADE;
+DROP TABLE IF EXISTS pap                     CASCADE;
 DROP TABLE IF EXISTS plano_mestre            CASCADE;
+DROP TABLE IF EXISTS estoque_movimentacoes   CASCADE;
+DROP TABLE IF EXISTS estoque                 CASCADE;
+DROP TABLE IF EXISTS bom                     CASCADE;
 DROP TABLE IF EXISTS forecast                CASCADE;
 DROP TABLE IF EXISTS demanda                CASCADE;
 DROP TABLE IF EXISTS pedido_itens            CASCADE;
@@ -127,62 +132,116 @@ CREATE TABLE demanda (
   UNIQUE (produto_id, periodo_inicio)
 );
 
--- Forecast (previsão de demanda) — nasce a partir de um item de pedido
+-- Forecast — estimativa futura por produto/mês (demanda = real, forecast = previsto).
+-- quantidade_sugerida = média móvel de 3 meses calculada pelo sistema;
+-- quantidade_prevista = valor final (sugerido ou ajustado pelo PCP).
 CREATE TABLE forecast (
-  id               SERIAL PRIMARY KEY,
-  pedido_item_id   INTEGER REFERENCES pedido_itens(id) ON DELETE SET NULL,
-  produto          VARCHAR(200) NOT NULL,
-  demanda_prevista INTEGER      NOT NULL CHECK (demanda_prevista > 0),
-  data_inicio      DATE         NOT NULL,
-  prazo_limite     DATE         NOT NULL,
-  observacoes      TEXT,
-  status           VARCHAR(20)  DEFAULT 'PENDENTE'
-                   CHECK (status IN ('PENDENTE','APROVADO','REVISAO')),
-  criado_por       INTEGER REFERENCES usuarios(id) ON DELETE SET NULL,
-  criado_em        TIMESTAMP    DEFAULT NOW()
+  id                  SERIAL PRIMARY KEY,
+  produto_id          INTEGER       NOT NULL REFERENCES produtos(id) ON DELETE RESTRICT,
+  periodo_inicio      DATE          NOT NULL,   -- sempre dia 1 do mês
+  quantidade_sugerida NUMERIC(12,2) NOT NULL DEFAULT 0,
+  quantidade_prevista NUMERIC(12,2) NOT NULL DEFAULT 0,
+  status              VARCHAR(20)   NOT NULL DEFAULT 'PENDENTE'
+                      CHECK (status IN ('PENDENTE','APROVADO','REVISAO')),
+  observacoes         TEXT,
+  criado_por          INTEGER REFERENCES usuarios(id) ON DELETE SET NULL,
+  criado_em           TIMESTAMP     DEFAULT NOW(),
+  atualizado_em       TIMESTAMP     DEFAULT NOW(),
+  UNIQUE (produto_id, periodo_inicio)
 );
 
--- Plano Mestre de Producao
-CREATE TABLE plano_mestre (
-  id          SERIAL PRIMARY KEY,
-  forecast_id INTEGER REFERENCES forecast(id) ON DELETE SET NULL,
-  descricao   TEXT,
-  status      VARCHAR(20) DEFAULT 'RASCUNHO'
-              CHECK (status IN ('RASCUNHO','EM_REVISAO','APROVADO')),
-  criado_por  INTEGER REFERENCES usuarios(id) ON DELETE SET NULL,
-  criado_em   TIMESTAMP   DEFAULT NOW()
+-- PAP — Plano Agregado de Produção (um registro por produto/mês, montado a partir do forecast APROVADO)
+CREATE TABLE pap (
+  id                   SERIAL PRIMARY KEY,
+  forecast_id          INTEGER REFERENCES forecast(id) ON DELETE SET NULL,
+  produto_id           INTEGER       NOT NULL REFERENCES produtos(id) ON DELETE RESTRICT,
+  periodo_inicio       DATE          NOT NULL,
+  quantidade_forecast  NUMERIC(12,2) NOT NULL DEFAULT 0,
+  estoque_atual        NUMERIC(12,2) NOT NULL DEFAULT 0,   -- saldo do acabado no momento da montagem
+  quantidade_planejada NUMERIC(12,2) NOT NULL DEFAULT 0,   -- produção planejada (sugestão = forecast − estoque, ajustável)
+  status               VARCHAR(20)   NOT NULL DEFAULT 'RASCUNHO'
+                       CHECK (status IN ('RASCUNHO','APROVADO')),
+  observacoes          TEXT,
+  criado_por           INTEGER REFERENCES usuarios(id) ON DELETE SET NULL,
+  criado_em            TIMESTAMP     DEFAULT NOW(),
+  atualizado_em        TIMESTAMP     DEFAULT NOW(),
+  UNIQUE (produto_id, periodo_inicio)
 );
 
--- Estoque
+-- PMP — Plano Mestre de Produção (PAP desagregado em 4 semanas; gerado automaticamente ao aprovar o PAP)
+CREATE TABLE pmp (
+  id            SERIAL PRIMARY KEY,
+  pap_id        INTEGER       NOT NULL REFERENCES pap(id) ON DELETE CASCADE,
+  produto_id    INTEGER       NOT NULL REFERENCES produtos(id) ON DELETE RESTRICT,
+  periodo_inicio DATE         NOT NULL,
+  semana        INTEGER       NOT NULL CHECK (semana BETWEEN 1 AND 4),
+  quantidade    NUMERIC(12,2) NOT NULL DEFAULT 0 CHECK (quantidade >= 0),
+  status        VARCHAR(20)   NOT NULL DEFAULT 'RASCUNHO'
+                CHECK (status IN ('RASCUNHO','APROVADO')),
+  atualizado_em TIMESTAMP     DEFAULT NOW(),
+  UNIQUE (pap_id, semana)
+);
+
+-- BOM — estrutura de produto (acabado = pai, matéria-prima = componente)
+CREATE TABLE bom (
+  id                   SERIAL PRIMARY KEY,
+  produto_pai_id       INTEGER       NOT NULL REFERENCES produtos(id) ON DELETE CASCADE,
+  componente_id        INTEGER       NOT NULL REFERENCES produtos(id) ON DELETE RESTRICT,
+  quantidade_por_unidade NUMERIC(12,4) NOT NULL CHECK (quantidade_por_unidade > 0),
+  criado_em            TIMESTAMP     DEFAULT NOW(),
+  UNIQUE (produto_pai_id, componente_id),
+  CHECK (produto_pai_id <> componente_id)
+);
+
+-- Estoque — saldo atual por produto (acabado ou matéria-prima)
 CREATE TABLE estoque (
-  id                SERIAL PRIMARY KEY,
-  materia_prima     VARCHAR(200)  NOT NULL,
-  unidade           VARCHAR(20)   NOT NULL,
-  quantidade_atual  NUMERIC(10,2) DEFAULT 0,
-  quantidade_minima NUMERIC(10,2) DEFAULT 0,
-  atualizado_em     TIMESTAMP     DEFAULT NOW()
+  produto_id       INTEGER PRIMARY KEY REFERENCES produtos(id) ON DELETE CASCADE,
+  quantidade_atual NUMERIC(12,2) NOT NULL DEFAULT 0 CHECK (quantidade_atual >= 0),
+  atualizado_em    TIMESTAMP     DEFAULT NOW()
 );
 
--- MRP (Planejamento de Recursos)
+-- Movimentações de estoque (histórico). delta é com sinal: + entrada, − saída.
+CREATE TABLE estoque_movimentacoes (
+  id          SERIAL PRIMARY KEY,
+  produto_id  INTEGER       NOT NULL REFERENCES produtos(id) ON DELETE CASCADE,
+  tipo        VARCHAR(20)   NOT NULL CHECK (tipo IN ('ENTRADA','SAIDA','AJUSTE')),
+  delta       NUMERIC(12,2) NOT NULL CHECK (delta <> 0),
+  saldo_apos  NUMERIC(12,2) NOT NULL,
+  motivo      TEXT,
+  origem      VARCHAR(30)   NOT NULL DEFAULT 'MANUAL',   -- MANUAL | COMPRA_PRODUCAO
+  usuario_id  INTEGER REFERENCES usuarios(id) ON DELETE SET NULL,
+  criado_em   TIMESTAMP     DEFAULT NOW()
+);
+
+-- MRP — necessidades por produto/mês (recalculado automaticamente: PMP aprovado → BOM → estoque).
+-- Agregado por produto porque a matéria-prima é compartilhada entre acabados.
 CREATE TABLE mrp (
-  id                    SERIAL PRIMARY KEY,
-  plano_id              INTEGER REFERENCES plano_mestre(id) ON DELETE SET NULL,
-  estoque_id            INTEGER REFERENCES estoque(id)      ON DELETE SET NULL,
-  quantidade_necessaria NUMERIC(10,2) NOT NULL,
-  situacao              VARCHAR(20)   DEFAULT 'OK'
-                        CHECK (situacao IN ('OK','FALTA','COMPRA_SOLICITADA')),
-  criado_em             TIMESTAMP     DEFAULT NOW()
+  id                  SERIAL PRIMARY KEY,
+  periodo_inicio      DATE          NOT NULL,
+  produto_id          INTEGER       NOT NULL REFERENCES produtos(id) ON DELETE RESTRICT,
+  tipo                VARCHAR(20)   NOT NULL CHECK (tipo IN ('PRODUCAO','COMPRA')),
+  necessidade_bruta   NUMERIC(12,2) NOT NULL DEFAULT 0,
+  estoque_considerado NUMERIC(12,2) NOT NULL DEFAULT 0,
+  necessidade_liquida NUMERIC(12,2) NOT NULL DEFAULT 0,
+  atualizado_em       TIMESTAMP     DEFAULT NOW(),
+  UNIQUE (periodo_inicio, produto_id)
 );
 
--- Ordens de Producao
-CREATE TABLE ordens_producao (
-  id         SERIAL PRIMARY KEY,
-  mrp_id     INTEGER REFERENCES mrp(id) ON DELETE SET NULL,
-  tipo       VARCHAR(20) CHECK (tipo IN ('PRODUCAO','COMPRA')),
-  status     VARCHAR(20) DEFAULT 'ABERTA'
-             CHECK (status IN ('ABERTA','EM_ANDAMENTO','CONCLUIDA','CANCELADA')),
-  criado_por INTEGER REFERENCES usuarios(id) ON DELETE SET NULL,
-  criado_em  TIMESTAMP   DEFAULT NOW()
+-- Compra/Produção — ordens sugeridas pelo MRP; aprovação e execução manuais
+CREATE TABLE compra_producao (
+  id             SERIAL PRIMARY KEY,
+  origem_mrp_id  INTEGER REFERENCES mrp(id) ON DELETE SET NULL,
+  produto_id     INTEGER       NOT NULL REFERENCES produtos(id) ON DELETE RESTRICT,
+  periodo_inicio DATE          NOT NULL,
+  tipo           VARCHAR(20)   NOT NULL CHECK (tipo IN ('PRODUCAO','COMPRA')),
+  quantidade     NUMERIC(12,2) NOT NULL CHECK (quantidade > 0),
+  status         VARCHAR(20)   NOT NULL DEFAULT 'SUGERIDA'
+                 CHECK (status IN ('SUGERIDA','APROVADA','EM_ANDAMENTO','CONCLUIDA','CANCELADA')),
+  observacoes    TEXT,
+  descartada     BOOLEAN       NOT NULL DEFAULT FALSE,   -- true = sugestão recusada direto (SUGERIDA → CANCELADA)
+  atualizado_por INTEGER REFERENCES usuarios(id) ON DELETE SET NULL,
+  criado_em      TIMESTAMP     DEFAULT NOW(),
+  atualizado_em  TIMESTAMP     DEFAULT NOW()
 );
 
 -- Solicitacoes de redefinicao de senha (executor pede, admin aprova)
