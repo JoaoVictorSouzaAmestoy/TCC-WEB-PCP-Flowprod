@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>FlowProd — Painel Admin</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -32,7 +32,7 @@
 body {
   background: var(--bg);
   color: var(--text);
-  font-family: 'Inter', sans-serif;
+  font-family:var(--font);
   min-height: 100vh;
   display: flex;
   flex-direction: column;
@@ -41,7 +41,7 @@ body {
 /* ══ TOPBAR ══════════════════════════════════════════════ */
 .topbar {
   position: sticky; top: 0; z-index: 50;
-  height: 56px;
+  height: 60px;
   background: rgba(8,13,20,.95);
   backdrop-filter: blur(12px);
   border-bottom: 1px solid var(--border);
@@ -82,7 +82,7 @@ body {
 .notif-sino-btn:hover { border-color: var(--blue); color: var(--blue); }
 .notif-badge {
   position: absolute; top: -7px; right: -7px;
-  background: var(--red); color: #fff; font-size: 10px; font-weight: 700;
+  background: #e11d48; color: #fff; font-size: 10px; font-weight: 700;
   width: 18px; height: 18px; border-radius: 50%;
   display: none; align-items: center; justify-content: center;
   border: 2px solid var(--bg);
@@ -105,7 +105,7 @@ body {
 .notif-action-btn {
   background: none; border: 1px solid var(--border2); color: var(--muted);
   padding: 3px 9px; border-radius: 6px; cursor: pointer;
-  font-size: 11px; font-family: 'Inter', sans-serif; transition: .2s;
+  font-size: 11px; font-family:var(--font); transition: .2s;
 }
 .notif-action-btn:hover { border-color: var(--red); color: var(--red); }
 .notif-painel-close {
@@ -122,7 +122,7 @@ body {
 .notif-painel-item.nao-lida { background: rgba(43,127,255,.04); }
 .notif-painel-dot {
   width: 7px; height: 7px; border-radius: 50%;
-  background: var(--blue); flex-shrink: 0; margin-top: 5px;
+  background: var(--blue-strong); flex-shrink: 0; margin-top: 5px;
 }
 .notif-painel-dot.lida { background: transparent; }
 .notif-painel-titulo { font-size: 13px; font-weight: 600; margin-bottom: 2px; }
@@ -135,7 +135,7 @@ body {
 .admin-info strong { display: block; color: var(--text); font-size: 13px; font-weight: 500; }
 .btn-logout {
   padding: 6px 14px; background: transparent; border: 1px solid var(--border2);
-  border-radius: 8px; font-family: 'Inter', sans-serif; font-size: 12px; color: var(--muted);
+  border-radius: 8px; font-family:var(--font); font-size: 12px; color: var(--muted);
   cursor: pointer; transition: .2s; display: flex; align-items: center; gap: 6px;
 }
 .btn-logout:hover { border-color: var(--red); color: var(--red); }
@@ -150,8 +150,8 @@ body {
   border-right: 1px solid var(--border);
   display: flex; flex-direction: column;
   padding: 16px 8px;
-  position: sticky; top: 56px;
-  height: calc(100vh - 56px);
+  position: sticky; top: 60px;
+  height: calc(100vh - 60px);
   overflow-y: auto;
 }
 .nav-section { margin-bottom: 4px; }
@@ -177,7 +177,7 @@ body {
 .nav-item i { font-size: 17px; width: 20px; text-align: center; flex-shrink: 0; }
 .nav-item-label { flex: 1; }
 .nav-count {
-  background: var(--blue); color: #fff;
+  background: var(--blue-strong); color: #fff;
   font-size: 10px; font-weight: 700;
   padding: 1px 6px; border-radius: 10px; min-width: 18px; text-align: center;
   display: none;
@@ -207,7 +207,7 @@ body {
 }
 .filter-btn {
   padding: 6px 14px; background: transparent; border: 1px solid var(--border2);
-  border-radius: 8px; font-family: 'Inter', sans-serif; font-size: 12px; font-weight: 500;
+  border-radius: 8px; font-family:var(--font); font-size: 12px; font-weight: 500;
   color: var(--muted); cursor: pointer; transition: .2s;
   display: flex; align-items: center; gap: 6px;
 }
@@ -252,7 +252,7 @@ body {
 .search-wrap input {
   width: 100%; background: var(--bg); border: 1px solid var(--border);
   border-radius: 8px; padding: 8px 12px 8px 34px;
-  color: var(--text); font-family: 'Inter', sans-serif; font-size: 13px; outline: none;
+  color: var(--text); font-family:var(--font); font-size: 13px; outline: none;
   transition: border-color .2s;
 }
 .search-wrap input:focus { border-color: var(--blue); }
@@ -300,7 +300,7 @@ td { padding: 12px 20px; font-size: 13px; vertical-align: middle; }
 .acoes { display: flex; align-items: center; gap: 5px; }
 .btn-acao {
   padding: 5px 10px; background: transparent; border: 1px solid var(--border2);
-  border-radius: 7px; font-family: 'Inter', sans-serif; font-size: 12px; color: var(--muted);
+  border-radius: 7px; font-family:var(--font); font-size: 12px; color: var(--muted);
   cursor: pointer; transition: .2s; white-space: nowrap;
   display: inline-flex; align-items: center; gap: 4px;
 }
@@ -345,7 +345,7 @@ td { padding: 12px 20px; font-size: 13px; vertical-align: middle; }
 .input-nova-senha {
   background: var(--bg) !important; border: 1px solid var(--border) !important;
   border-radius: 8px !important; padding: 7px 11px !important;
-  color: var(--text) !important; font-family: 'Inter', sans-serif !important;
+  color: var(--text) !important; font-family:var(--font);
   font-size: 12px !important; outline: none !important; width: 140px !important;
   transition: border-color .2s !important;
 }
@@ -353,14 +353,14 @@ td { padding: 12px 20px; font-size: 13px; vertical-align: middle; }
 
 .btn-aprovar {
   padding: 6px 14px; background: rgba(34,197,94,.1); border: 1px solid rgba(34,197,94,.3);
-  border-radius: 7px; font-family: 'Inter', sans-serif; font-size: 12px; font-weight: 600;
+  border-radius: 7px; font-family:var(--font); font-size: 12px; font-weight: 600;
   color: var(--green); cursor: pointer; transition: .2s; white-space: nowrap;
   display: inline-flex; align-items: center; gap: 4px;
 }
 .btn-aprovar:hover { background: rgba(34,197,94,.2); }
 .btn-recusar {
   padding: 6px 12px; background: transparent; border: 1px solid var(--border2);
-  border-radius: 7px; font-family: 'Inter', sans-serif; font-size: 12px; color: var(--muted);
+  border-radius: 7px; font-family:var(--font); font-size: 12px; color: var(--muted);
   cursor: pointer; transition: .2s; white-space: nowrap;
   display: inline-flex; align-items: center; gap: 4px;
 }
@@ -408,14 +408,14 @@ td { padding: 12px 20px; font-size: 13px; vertical-align: middle; }
 .modal-texto  { font-size: 13px; color: var(--muted); line-height: 1.6; margin-bottom: 22px; }
 .modal-acoes  { display: flex; gap: 10px; }
 .btn-confirmar {
-  flex: 1; padding: 11px; background: var(--red); border: none; border-radius: 9px;
-  font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 600;
+  flex: 1; padding: 11px; background: #e11d48; border: none; border-radius: 9px;
+  font-family:var(--font); font-size: 13px; font-weight: 600;
   color: #fff; cursor: pointer; transition: opacity .2s;
 }
 .btn-confirmar:hover { opacity: .85; }
 .btn-cancelar {
   flex: 1; padding: 11px; background: transparent; border: 1px solid var(--border2);
-  border-radius: 9px; font-family: 'Inter', sans-serif; font-size: 13px; color: var(--muted);
+  border-radius: 9px; font-family:var(--font); font-size: 13px; color: var(--muted);
   cursor: pointer; transition: .2s;
 }
 .btn-cancelar:hover { border-color: var(--text); color: var(--text); }
@@ -452,13 +452,13 @@ td { padding: 12px 20px; font-size: 13px; vertical-align: middle; }
 .btn-copy-convite {
   background: none; border: 1px solid var(--border2); color: var(--muted);
   padding: 8px 16px; border-radius: 8px; cursor: pointer;
-  font-family: 'Inter', sans-serif; font-size: 12px; transition: .2s;
+  font-family:var(--font); font-size: 12px; transition: .2s;
   display: flex; align-items: center; gap: 5px;
 }
 .btn-copy-convite:hover { border-color: var(--blue); color: var(--blue); }
 .btn-fechar-convite {
-  background: var(--blue); border: none; color: #fff; padding: 11px 32px;
-  border-radius: 9px; cursor: pointer; font-family: 'Inter', sans-serif;
+  background: var(--blue-strong); border: none; color: #fff; padding: 11px 32px;
+  border-radius: 9px; cursor: pointer; font-family:var(--font);
   font-size: 14px; font-weight: 600; transition: .2s; width: 100%;
 }
 .btn-fechar-convite:hover { background: var(--blue-dk); }
@@ -491,7 +491,7 @@ td { padding: 12px 20px; font-size: 13px; vertical-align: middle; }
 .mcred-copy {
   background: none; border: 1px solid var(--border2); color: var(--muted);
   padding: 3px 9px; border-radius: 5px; cursor: pointer;
-  font-size: 11px; font-family: 'Inter', sans-serif; transition: .2s;
+  font-size: 11px; font-family:var(--font); transition: .2s;
 }
 .mcred-copy:hover { border-color: var(--blue); color: var(--blue); }
 .mcred-aviso {
@@ -500,8 +500,8 @@ td { padding: 12px 20px; font-size: 13px; vertical-align: middle; }
   line-height: 1.6; text-align: left;
 }
 .mcred-btn {
-  background: var(--blue); border: none; border-radius: 9px; color: #fff;
-  padding: 12px; width: 100%; cursor: pointer; font-family: 'Inter', sans-serif;
+  background: var(--blue-strong); border: none; border-radius: 9px; color: #fff;
+  padding: 12px; width: 100%; cursor: pointer; font-family:var(--font);
   font-size: 14px; font-weight: 600; transition: .2s;
 }
 .mcred-btn:hover { background: var(--blue-dk); }
@@ -512,6 +512,7 @@ td { padding: 12px 20px; font-size: 13px; vertical-align: middle; }
   .main-content { padding: 16px; }
 }
 </style>
+<link rel="stylesheet" href="/css/flowprod-ui.css">
 </head>
 <body>
 
@@ -755,13 +756,13 @@ td { padding: 12px 20px; font-size: 13px; vertical-align: middle; }
 <script>
 // ── Configuração das funções ──────────────────────────────
 const FUNCOES_CONFIG = {
-  COMERCIAL:       { cor:'#ec4899', bg:'rgba(236,72,153,.1)',  borda:'rgba(236,72,153,.3)',  icon:'ti-users',      sub:'Clientes e pedidos' },
-  FORECAST:        { cor:'#2b7fff', bg:'rgba(43,127,255,.1)',  borda:'rgba(43,127,255,.3)',  icon:'ti-chart-line',  sub:'Previsão' },
-  PAP:             { cor:'#06b6d4', bg:'rgba(6,182,212,.1)',   borda:'rgba(6,182,212,.3)',   icon:'ti-list-details', sub:'Plano Agregado' },
-  PMP:             { cor:'#00d4ff', bg:'rgba(0,212,255,.1)',   borda:'rgba(0,212,255,.3)',   icon:'ti-clipboard-list', sub:'Plano Mestre' },
-  MRP:             { cor:'#a855f7', bg:'rgba(168,85,247,.1)',  borda:'rgba(168,85,247,.3)',  icon:'ti-settings-2', sub:'Necessidade de Materiais' },
-  ESTOQUE:         { cor:'#22c55e', bg:'rgba(34,197,94,.1)',   borda:'rgba(34,197,94,.3)',   icon:'ti-package',    sub:'Estoque' },
-  COMPRA_PRODUCAO: { cor:'#f97316', bg:'rgba(249,115,22,.1)',  borda:'rgba(249,115,22,.3)',  icon:'ti-building-factory-2', sub:'Compra / Produção' },
+  COMERCIAL:       { cor:'#f472b6', bg:'rgba(244,114,182,.1)', borda:'rgba(244,114,182,.3)', icon:'ti-users',      sub:'Clientes e pedidos' },
+  FORECAST:        { cor:'#4d94ff', bg:'rgba(77,148,255,.1)',  borda:'rgba(77,148,255,.3)',  icon:'ti-chart-line',  sub:'Previsão' },
+  PAP:             { cor:'#fb7185', bg:'rgba(251,113,133,.1)', borda:'rgba(251,113,133,.3)', icon:'ti-list-details', sub:'Plano Agregado' },
+  PMP:             { cor:'#c084fc', bg:'rgba(192,132,252,.1)', borda:'rgba(192,132,252,.3)', icon:'ti-clipboard-list', sub:'Plano Mestre' },
+  MRP:             { cor:'#34d399', bg:'rgba(52,211,153,.1)',  borda:'rgba(52,211,153,.3)',  icon:'ti-settings-2', sub:'Necessidade de Materiais' },
+  ESTOQUE:         { cor:'#f59e0b', bg:'rgba(245,158,11,.1)',  borda:'rgba(245,158,11,.3)',  icon:'ti-package',    sub:'Estoque' },
+  COMPRA_PRODUCAO: { cor:'#22d3ee', bg:'rgba(34,211,238,.1)',  borda:'rgba(34,211,238,.3)',  icon:'ti-building-factory-2', sub:'Compra / Produção' },
 };
 
 let todosUsuarios = [];
@@ -886,7 +887,7 @@ async function carregarSolExec(filtro) {
       const isPendente = s.status === 'PENDENTE';
 
       const funcoesBadges = (s.funcoes||[]).map(f => {
-        const cfg = FUNCOES_CONFIG[f] || { cor:'#6b82a0', bg:'rgba(107,130,160,.1)', borda:'rgba(107,130,160,.3)' };
+        const cfg = FUNCOES_CONFIG[f] || { cor:'#9fb0c8', bg:'rgba(159,176,200,.1)', borda:'rgba(159,176,200,.3)' };
         return `<span class="badge-funcao" style="color:${cfg.cor};background:${cfg.bg};border-color:${cfg.borda}">${f}</span>`;
       }).join('');
 
@@ -1135,7 +1136,7 @@ async function carregarClientes(filtro) {
           <div class="sol-acoes">
             <input type="password" id="senhaCliente${c.id}" placeholder="Definir senha (mín. 6)"
               style="background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--text);
-                font-family:'Inter',sans-serif;font-size:12px;padding:7px 10px;outline:none;width:160px;">
+                font-family:var(--font);font-size:12px;padding:7px 10px;outline:none;width:160px;">
             <button class="btn-aprovar" onclick="aprovarCliente(${c.id})">
               <i class="ti ti-check"></i> Aprovar
             </button>

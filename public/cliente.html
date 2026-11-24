@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>FlowProd — Área do Cliente</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
 <style>
 :root {
@@ -27,7 +27,7 @@
 
 body {
   background: var(--bg); color: var(--text);
-  font-family: 'Inter', sans-serif;
+  font-family:var(--font);
   min-height: 100vh; display: flex; flex-direction: column;
   align-items: center; justify-content: center; padding: 24px;
   position: relative; overflow-x: hidden;
@@ -90,7 +90,7 @@ body::after {
   flex: 1; padding: 8px 4px; border-radius: 7px; text-align: center;
   font-size: 12px; font-weight: 600; cursor: pointer;
   background: none; border: none; color: var(--muted);
-  font-family: 'Inter', sans-serif; transition: .2s; white-space: nowrap;
+  font-family:var(--font); transition: .2s; white-space: nowrap;
 }
 .tab.active { background: var(--surface); color: var(--text); border: 1px solid var(--border); }
 
@@ -110,7 +110,7 @@ body::after {
 .input-top .input-icon { top: 14px; transform: none; }
 input, textarea {
   width: 100%; background: var(--bg); border: 1px solid var(--border);
-  border-radius: 10px; color: var(--text); font-family: 'Inter', sans-serif;
+  border-radius: 10px; color: var(--text); font-family:var(--font);
   font-size: 14px; padding: 11px 12px 11px 38px;
   outline: none; transition: border-color .2s, box-shadow .2s;
 }
@@ -139,30 +139,30 @@ input:focus, textarea:focus {
 .info-box {
   background: var(--bg); border: 1px solid var(--border); border-radius: 10px;
   padding: 12px 14px; font-size: 12px; color: var(--dim); line-height: 1.7;
-  display: flex; align-items: flex-start; gap: 8px;
+  display: flex; flex-wrap: wrap; align-items: flex-start; gap: 8px;
 }
 .info-box i { font-size: 15px; color: var(--cyan); flex-shrink: 0; margin-top: 1px; }
 
 /* ── Botões ────────────────────────────────────────────── */
 .btn-submit {
-  background: var(--cyan); border: none; border-radius: 10px;
-  color: #fff; cursor: pointer; font-family: 'Inter', sans-serif;
+  background: var(--cyan-dk); border: none; border-radius: 10px;
+  color: #fff; cursor: pointer; font-family:var(--font);
   font-size: 14px; font-weight: 600; padding: 13px; width: 100%;
   transition: .2s; display: flex; align-items: center; justify-content: center; gap: 8px;
 }
-.btn-submit:hover:not(:disabled) { background: var(--cyan-dk); }
+.btn-submit:hover:not(:disabled) { background: #155e75; }
 .btn-submit:disabled { opacity: .5; cursor: not-allowed; }
 .btn-green {
-  background: linear-gradient(135deg, #15803d, var(--green));
+  background: var(--grad-green);
   border: none; border-radius: 10px; color: #fff; cursor: pointer;
-  font-family: 'Inter', sans-serif; font-size: 14px; font-weight: 600;
+  font-family:var(--font); font-size: 14px; font-weight: 600;
   padding: 13px; width: 100%; transition: opacity .2s;
   display: flex; align-items: center; justify-content: center; gap: 8px;
 }
 .btn-green:hover { opacity: .9; }
 .btn-ghost {
   background: none; border: 1px solid var(--border); border-radius: 10px;
-  color: var(--muted); cursor: pointer; font-family: 'Inter', sans-serif;
+  color: var(--muted); cursor: pointer; font-family:var(--font);
   font-size: 13px; padding: 10px; width: 100%; transition: .2s;
   display: flex; align-items: center; justify-content: center; gap: 6px;
 }
@@ -227,6 +227,7 @@ input:focus, textarea:focus {
 }
 .cred-nota { font-size: 11px; color: var(--dim); line-height: 1.5; padding-top: 8px; border-top: 1px solid var(--border); }
 </style>
+<link rel="stylesheet" href="/css/flowprod-ui.css">
 </head>
 <body>
 

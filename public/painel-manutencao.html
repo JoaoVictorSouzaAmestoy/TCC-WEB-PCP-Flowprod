@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>FlowProd — Painel de Manutenção</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
 <style>
 :root {
@@ -16,7 +16,7 @@
 }
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 body {
-  background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif;
+  background: var(--bg); color: var(--text); font-family:var(--font);
   min-height: 100vh; display: flex; align-items: center; justify-content: center;
   padding: 24px; position: relative; overflow: hidden;
 }
@@ -59,7 +59,7 @@ body::before {
 .input-icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--dim); font-size: 15px; pointer-events: none; }
 input {
   width: 100%; background: var(--bg); border: 1px solid var(--border);
-  border-radius: 10px; color: var(--text); font-family: 'Inter', sans-serif;
+  border-radius: 10px; color: var(--text); font-family:var(--font);
   font-size: 14px; padding: 11px 12px 11px 38px;
   outline: none; transition: border-color .2s, box-shadow .2s;
 }
@@ -86,13 +86,13 @@ input::placeholder { color: var(--dim); }
 
 .btn {
   border: none; border-radius: 10px; cursor: pointer;
-  font-family: 'Inter', sans-serif; font-size: 14px; font-weight: 600;
+  font-family:var(--font); font-size: 14px; font-weight: 600;
   padding: 13px; width: 100%; transition: .2s;
   display: flex; align-items: center; justify-content: center; gap: 8px;
 }
-.btn-red   { background: var(--red);   color: #fff; }
+.btn-red   { background: #e11d48;   color: #fff; }
 .btn-red:hover   { background: #c81c3a; }
-.btn-green { background: var(--green); color: #fff; }
+.btn-green { background: #15803d; color: #fff; }
 .btn-green:hover { background: #16a34a; }
 .btn:disabled { opacity: .5; cursor: not-allowed; }
 
@@ -113,6 +113,7 @@ input::placeholder { color: var(--dim); }
 }
 .aviso-box i { flex-shrink: 0; margin-top: 1px; }
 </style>
+<link rel="stylesheet" href="/css/flowprod-ui.css">
 </head>
 <body>
 <div class="card">

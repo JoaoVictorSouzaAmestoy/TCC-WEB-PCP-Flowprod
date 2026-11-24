@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>FlowProd — Acesso ao Sistema</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
 <style>
   :root {
@@ -27,7 +27,7 @@
   body {
     background: var(--bg);
     color: var(--text);
-    font-family: 'Inter', sans-serif;
+    font-family:var(--font);
     min-height: 100vh;
     display: flex;
     align-items: center;
@@ -123,7 +123,7 @@
     border: 1px solid var(--border);
     border-radius: 10px;
     color: var(--text);
-    font-family: 'Inter', sans-serif;
+    font-family:var(--font);
     font-size: 14px;
     padding: 11px 42px;
     outline: none;
@@ -143,7 +143,7 @@
 
   .forgot-btn {
     background: none; border: none; cursor: pointer;
-    font-family: 'Inter', sans-serif; font-size: 12px;
+    font-family:var(--font); font-size: 12px;
     color: var(--muted); text-align: right; align-self: flex-end;
     transition: color .2s; padding: 0;
   }
@@ -160,17 +160,17 @@
 
   /* ── Botão principal ── */
   .btn-submit {
-    background: var(--blue);
+    background: var(--blue-strong);
     border: none; border-radius: 10px;
     color: #fff; cursor: pointer;
-    font-family: 'Inter', sans-serif; font-size: 14px; font-weight: 600;
+    font-family:var(--font); font-size: 14px; font-weight: 600;
     padding: 13px; width: 100%;
     transition: background .2s, opacity .2s;
     display: flex; align-items: center; justify-content: center; gap: 8px;
   }
   .btn-submit:hover:not(:disabled) { background: var(--blue-dk); }
   .btn-submit:disabled { opacity: .5; cursor: not-allowed; }
-  .btn-submit.success { background: linear-gradient(135deg, #15803d, var(--green)); }
+  .btn-submit.success { background: var(--grad-green); }
 
   .spinner {
     width: 15px; height: 15px;
@@ -221,14 +221,14 @@
   .btn-sec {
     flex: 1; padding: 10px; border-radius: 9px;
     border: 1px solid var(--border2); background: none;
-    color: var(--muted); cursor: pointer; font-family: 'Inter', sans-serif;
+    color: var(--muted); cursor: pointer; font-family:var(--font);
     font-size: 13px; transition: .2s;
   }
   .btn-sec:hover { border-color: var(--blue); color: var(--blue); }
   .btn-pri {
     flex: 1; padding: 10px; border-radius: 9px;
-    border: none; background: var(--blue);
-    color: #fff; cursor: pointer; font-family: 'Inter', sans-serif;
+    border: none; background: var(--blue-strong);
+    color: #fff; cursor: pointer; font-family:var(--font);
     font-size: 13px; font-weight: 600; transition: .2s;
   }
   .btn-pri:hover { background: var(--blue-dk); }
@@ -266,6 +266,7 @@
   .m-desc { font-size: 11px; color: var(--muted); margin-top: 1px; }
   .m-arrow { margin-left: auto; color: var(--dim); font-size: 16px; }
 </style>
+<link rel="stylesheet" href="/css/flowprod-ui.css">
 </head>
 <body>
 

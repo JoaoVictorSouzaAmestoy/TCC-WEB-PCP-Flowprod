@@ -26,7 +26,7 @@
 html { scroll-behavior: smooth; }
 body {
   background: var(--bg); color: var(--text);
-  font-family: 'Inter', sans-serif; overflow-x: hidden;
+  font-family:var(--font); overflow-x: hidden;
 }
 
 /* ── NAV ─────────────────────────────────────────────────── */
@@ -53,12 +53,12 @@ nav {
 .nav-links { display: flex; gap: 8px; align-items: center; }
 .nav-link {
   padding: 7px 16px; border-radius: 8px; font-size: 13px; font-weight: 500;
-  cursor: pointer; font-family: 'Inter', sans-serif; transition: .2s;
+  cursor: pointer; font-family:var(--font); transition: .2s;
   text-decoration: none; display: inline-flex; align-items: center; gap: 7px;
 }
 .nav-link.ghost { background: none; border: 1px solid var(--border2); color: var(--muted); }
 .nav-link.ghost:hover { border-color: var(--blue); color: var(--blue); }
-.nav-link.solid { background: var(--blue); border: 1px solid var(--blue); color: #fff; }
+.nav-link.solid { background: var(--blue-strong); border: 1px solid var(--blue); color: #fff; }
 .nav-link.solid:hover { background: var(--blue-dk); }
 
 /* ── BOTÃO FLUTUANTE INFERIOR DIREITO ────────────────────── */
@@ -74,13 +74,13 @@ nav {
 .fab-btn {
   display: flex; align-items: center; gap: 10px;
   padding: 13px 20px; border-radius: 14px;
-  font-family: 'Inter', sans-serif; font-size: 14px; font-weight: 600;
+  font-family:var(--font); font-size: 14px; font-weight: 600;
   cursor: pointer; text-decoration: none; transition: .25s;
   border: 1px solid transparent;
   box-shadow: 0 8px 32px rgba(0,0,0,.4);
 }
 .fab-btn.colab {
-  background: var(--blue); color: #fff; border-color: var(--blue);
+  background: var(--blue-strong); color: #fff; border-color: var(--blue);
 }
 .fab-btn.colab:hover {
   background: var(--blue-dk); transform: translateY(-2px);
@@ -130,7 +130,7 @@ nav {
   text-transform: uppercase; margin-bottom: 36px;
 }
 .pulse {
-  width: 7px; height: 7px; border-radius: 50%; background: var(--blue);
+  width: 7px; height: 7px; border-radius: 50%; background: var(--blue-strong);
   animation: pulse 2s infinite;
 }
 @keyframes pulse {
@@ -244,7 +244,7 @@ h1 em { font-style: normal; color: var(--blue); }
   content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
   opacity: 0; transition: opacity .3s;
 }
-.papel-card.admin::before  { background: var(--blue); }
+.papel-card.admin::before  { background: var(--blue-strong); }
 .papel-card.colab::before  { background: var(--green); }
 .papel-card.cli::before    { background: var(--cyan); }
 .papel-card:hover { transform: translateY(-4px); border-color: var(--border2); }
@@ -387,6 +387,7 @@ footer a:hover { color: var(--muted); }
   .nav-links .nav-link span { display: none; }
 }
 </style>
+<link rel="stylesheet" href="/css/flowprod-ui.css">
 </head>
 <body>
 

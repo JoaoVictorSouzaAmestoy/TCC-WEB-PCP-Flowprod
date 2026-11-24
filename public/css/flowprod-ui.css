@@ -1,0 +1,94 @@
+/* flowprod-ui.css — padrão visual único do FlowProd.
+   Carregado POR ÚLTIMO em todas as telas (depois do CSS da própria página),
+   então os valores abaixo valem para o sistema inteiro. Para mudar uma cor
+   ou a fonte, altere aqui — não nas páginas.
+
+   Contraste (WCAG, medido): textos >= 4,5:1 sobre --bg, --surface e --hover;
+   botões com texto branco >= 4,5:1; bordas de campo >= 3:1. */
+
+:root {
+  /* ── Tipografia ── */
+  --font: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+
+  /* ── Superfícies ── */
+  --bg: #080d14;
+  --surface: #0d1520;
+  --surface-alt: #0a1220;
+  --hover: #0f1a2a;
+
+  /* ── Linhas ── */
+  --line: #243550;          /* divisórias e bordas de card */
+  --border: #243550;        /* alias usado por várias telas */
+  --border2: #33496b;       /* borda mais forte (hover, destaque) */
+  --line-input: #4a6482;    /* campos e botões secundários (>= 3:1) */
+
+  /* ── Texto ── */
+  --txt: #e8edf5;           /* principal            15,6:1 */
+  --text: #e8edf5;          /* alias */
+  --txt2: #c7d2e2;          /* secundário forte     12,0:1 */
+  --muted: #9fb0c8;         /* rótulos e apoio       8,3:1 */
+  --muted2: #8196b4;        /* dicas, cabeçalhos     6,1:1 */
+  --dim: #8196b4;           /* alias (antes #3a5070, 2,2:1) */
+
+  /* ── Azul de marca ── */
+  --blue: #4d94ff;          /* texto, links e destaques sobre fundo escuro */
+  --blue-text: #4d94ff;
+  --blue-strong: #2563eb;   /* fundo de botão com texto branco (5,2:1) */
+  --blue-dk: #1d4ed8;
+  --grad-blue: linear-gradient(135deg, #1d4ed8, #2563eb);
+
+  /* ── Estados ── */
+  --green: #22c55e;
+  --amber: #f59e0b;
+  --red: #f43f5e;
+  --error: #f43f5e;
+  --orange: #f97316;
+  --purple: #c084fc;
+  --purple-text: #c084fc;
+  --pink-text: #f472b6;
+  --grad-green: linear-gradient(135deg, #166534, #15803d);
+  --grad-pink: linear-gradient(135deg, #9d174d, #be185d);
+
+  /* ── Cor de cada módulo (a mesma na tela do módulo, no admin e nos menus) ── */
+  --mod-comercial: #f472b6;
+  --mod-forecast: #4d94ff;
+  --mod-pap: #fb7185;
+  --mod-pmp: #c084fc;
+  --mod-mrp: #34d399;
+  --mod-estoque: #f59e0b;
+  --mod-compra: #22d3ee;
+}
+
+html, body, button, input, select, textarea { font-family: var(--font); }
+
+/* Placeholder legível (o padrão do navegador fica ~4,2:1) */
+::placeholder { color: var(--muted2); opacity: 1; }
+
+/* Campos: borda visível em repouso, destaque no foco */
+input:not([type=checkbox]):not([type=radio]):not([type=range]):not([type=color]):not([type=file]),
+select,
+textarea { border-color: var(--line-input); }
+
+input:focus:not([type=checkbox]):not([type=radio]):not([type=range]):not([type=color]):not([type=file]),
+select:focus,
+textarea:focus {
+  border-color: var(--blue);
+  box-shadow: 0 0 0 3px rgba(77, 148, 255, .22);
+  outline: none;
+}
+
+/* Foco por teclado em botões e links */
+:where(button, a, [role=button], [tabindex]):focus-visible {
+  outline: 2px solid var(--blue);
+  outline-offset: 2px;
+}
+
+/* Botão secundário das telas de módulo: borda legível */
+.btn { border-color: var(--line-input); }
+.btn.primary { border: none; }
+.btn.danger { border-color: rgba(244, 63, 94, .45); }
+
+/* Barra superior idêntica em todas as telas que a usam */
+.topbar { height: 60px; }
+.topbar .logo, .topbar-left .logo { font-size: 18px; }
+.topbar .page-title, .topbar-left .page-title { font-size: 14px; }

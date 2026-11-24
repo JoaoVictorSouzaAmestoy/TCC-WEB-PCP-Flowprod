@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>FlowProd — Primeiro Acesso</title>
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
   :root{
     --bg:#080d14; --surface:#0d1520; --border:#1a2740;
@@ -13,7 +13,7 @@
     --green:#22c55e; --error:#f43f5e; --amber:#f59e0b;
   }
   *{box-sizing:border-box;margin:0;padding:0;}
-  body{background:var(--bg);color:var(--text);font-family:'Poppins',sans-serif;
+  body{background:var(--bg);color:var(--text);font-family:var(--font);
     min-height:100vh;display:flex;flex-direction:column;align-items:center;
     justify-content:center;padding:24px;}
   .back{position:fixed;top:18px;left:22px;color:var(--muted);font-size:13px;
@@ -31,16 +31,16 @@
   .form-group{display:flex;flex-direction:column;gap:6px;}
   label{font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.7px;}
   input{background:var(--bg);border:1px solid var(--border);border-radius:8px;
-    color:var(--text);font-family:'Poppins',sans-serif;font-size:14px;
+    color:var(--text);font-family:var(--font);font-size:14px;
     padding:11px 14px;transition:.2s;outline:none;width:100%;}
   input:focus{border-color:var(--blue);}
 
   .btn{border:none;border-radius:8px;color:#fff;cursor:pointer;
-    font-family:'Poppins',sans-serif;font-size:14px;font-weight:600;
+    font-family:var(--font);font-size:14px;font-weight:600;
     padding:13px;width:100%;transition:.2s;display:flex;align-items:center;
     justify-content:center;gap:8px;}
-  .btn-blue {background:linear-gradient(135deg,var(--blue-dk),var(--blue));}
-  .btn-green{background:linear-gradient(135deg,#15803d,var(--green));}
+  .btn-blue {background:var(--grad-blue);}
+  .btn-green{background:var(--grad-green);}
   .btn-ghost{background:none;border:1px solid var(--border);color:var(--muted);}
   .btn-ghost:hover{border-color:var(--blue);color:var(--blue);}
   .btn:hover{opacity:.9;}
@@ -76,11 +76,11 @@
   .cred-row{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;}
   .cred-label{font-size:12px;color:var(--muted);flex-shrink:0;}
   .cred-val{font-family:'Consolas',monospace;font-size:14px;font-weight:600;
-    background:#0d1520;padding:5px 12px;border-radius:6px;border:1px solid #1a2740;
+    background:var(--surface);padding:5px 12px;border-radius:6px;border:1px solid var(--line);
     color:var(--text);word-break:break-all;}
-  .btn-copiar{background:none;border:1px solid #1a2740;color:var(--muted);
+  .btn-copiar{background:none;border:1px solid var(--line);color:var(--muted);
     padding:4px 10px;border-radius:5px;cursor:pointer;font-size:11px;
-    font-family:'Poppins',sans-serif;transition:.2s;flex-shrink:0;}
+    font-family:var(--font);transition:.2s;flex-shrink:0;}
   .btn-copiar:hover{border-color:var(--blue);color:var(--blue);}
   .funcoes-wrap{display:flex;flex-wrap:wrap;gap:6px;margin-top:2px;}
   .funcao-tag{padding:3px 10px;border-radius:5px;font-size:11px;font-weight:700;
@@ -103,6 +103,7 @@
     border-radius:8px;padding:12px 16px;font-size:12px;color:var(--error);
     line-height:1.7;text-align:left;width:100%;}
 </style>
+<link rel="stylesheet" href="/css/flowprod-ui.css">
 </head>
 <body>
 <a href="/login.html" class="back">← Login</a>
@@ -145,7 +146,7 @@
       <a href="/login.html" style="text-align:center;font-size:13px;color:var(--dim);text-decoration:none;">
         Já conheço meu e-mail e senha → <span style="color:var(--blue)">Fazer login</span>
       </a>
-      <button onclick="mostrarTelaAlterada()" style="background:none;border:none;cursor:pointer;font-size:12px;color:var(--dim);font-family:'Poppins',sans-serif;transition:.2s;"
+      <button onclick="mostrarTelaAlterada()" style="background:none;border:none;cursor:pointer;font-size:12px;color:var(--dim);font-family:var(--font);transition:.2s;"
         onmouseover="this.style.color='var(--amber)'" onmouseout="this.style.color='var(--dim)'">
         🔑 Fui notificado de troca de senha
       </button>

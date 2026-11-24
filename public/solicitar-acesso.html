@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>FlowProd — Solicitar Acesso</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
 <style>
 :root {
@@ -27,7 +27,7 @@
 
 body {
   background: var(--bg); color: var(--text);
-  font-family: 'Inter', sans-serif;
+  font-family:var(--font);
   min-height: 100vh; display: flex; flex-direction: column;
   align-items: center; justify-content: center; padding: 24px;
   position: relative; overflow-x: hidden;
@@ -90,7 +90,7 @@ body::after {
   flex: 1; padding: 8px 6px; border-radius: 7px; text-align: center;
   font-size: 12px; font-weight: 600; cursor: pointer;
   background: none; border: none; color: var(--muted);
-  font-family: 'Inter', sans-serif; transition: .2s;
+  font-family:var(--font); transition: .2s;
 }
 .tab.active { background: var(--surface); color: var(--text); border: 1px solid var(--border); }
 
@@ -108,7 +108,7 @@ body::after {
 }
 input {
   width: 100%; background: var(--bg); border: 1px solid var(--border);
-  border-radius: 10px; color: var(--text); font-family: 'Inter', sans-serif;
+  border-radius: 10px; color: var(--text); font-family:var(--font);
   font-size: 14px; padding: 11px 12px 11px 38px;
   outline: none; transition: border-color .2s, box-shadow .2s;
 }
@@ -141,7 +141,7 @@ input:focus { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(43,127,255,.
   flex-shrink: 0; display: flex; align-items: center; justify-content: center;
   font-size: 11px; transition: .2s; color: #fff;
 }
-.modulo-item.sel .mod-check { background: var(--blue); border-color: var(--blue); }
+.modulo-item.sel .mod-check { background: var(--blue-strong); border-color: var(--blue); }
 
 .mod-icon { font-size: 16px; width: 20px; text-align: center; flex-shrink: 0; }
 .mod-info { display: flex; flex-direction: column; gap: 1px; }
@@ -167,8 +167,8 @@ input:focus { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(43,127,255,.
 
 /* ── Botões ────────────────────────────────────────────── */
 .btn-submit {
-  background: var(--blue); border: none; border-radius: 10px;
-  color: #fff; cursor: pointer; font-family: 'Inter', sans-serif;
+  background: var(--blue-strong); border: none; border-radius: 10px;
+  color: #fff; cursor: pointer; font-family:var(--font);
   font-size: 14px; font-weight: 600; padding: 13px; width: 100%;
   transition: .2s; display: flex; align-items: center; justify-content: center; gap: 8px;
 }
@@ -176,7 +176,7 @@ input:focus { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(43,127,255,.
 .btn-submit:disabled { opacity: .5; cursor: not-allowed; }
 .btn-ghost {
   background: none; border: 1px solid var(--border); border-radius: 10px;
-  color: var(--muted); cursor: pointer; font-family: 'Inter', sans-serif;
+  color: var(--muted); cursor: pointer; font-family:var(--font);
   font-size: 13px; padding: 10px; width: 100%; transition: .2s;
   display: flex; align-items: center; justify-content: center; gap: 6px;
 }
@@ -230,14 +230,15 @@ input:focus { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(43,127,255,.
 .st-poll  { font-size: 11px; color: var(--dim); }
 
 .btn-green {
-  background: linear-gradient(135deg, #15803d, var(--green));
+  background: var(--grad-green);
   border: none; border-radius: 10px; color: #fff; cursor: pointer;
-  font-family: 'Inter', sans-serif; font-size: 14px; font-weight: 600;
+  font-family:var(--font); font-size: 14px; font-weight: 600;
   padding: 13px; width: 100%; transition: .2s;
   display: flex; align-items: center; justify-content: center; gap: 8px;
 }
 .btn-green:hover { opacity: .9; }
 </style>
+<link rel="stylesheet" href="/css/flowprod-ui.css">
 </head>
 <body>
 
@@ -307,7 +308,7 @@ input:focus { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(43,127,255,.
             <label class="modulo-item" onclick="toggleModulo(this)">
               <input type="checkbox" value="COMERCIAL">
               <div class="mod-check"></div>
-              <i class="ti ti-users mod-icon" style="color:#ec4899"></i>
+              <i class="ti ti-users mod-icon" style="color:var(--pink-text)"></i>
               <div class="mod-info">
                 <span class="mod-nome">Comercial</span>
                 <span class="mod-desc">Clientes, pedidos e demanda</span>
@@ -316,7 +317,7 @@ input:focus { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(43,127,255,.
             <label class="modulo-item" onclick="toggleModulo(this)">
               <input type="checkbox" value="FORECAST">
               <div class="mod-check"></div>
-              <i class="ti ti-chart-line mod-icon" style="color:#2b7fff"></i>
+              <i class="ti ti-chart-line mod-icon" style="color:var(--blue-text)"></i>
               <div class="mod-info">
                 <span class="mod-nome">Forecast</span>
                 <span class="mod-desc">Previsão de demanda</span>
@@ -343,7 +344,7 @@ input:focus { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(43,127,255,.
             <label class="modulo-item" onclick="toggleModulo(this)">
               <input type="checkbox" value="MRP">
               <div class="mod-check"></div>
-              <i class="ti ti-settings-2 mod-icon" style="color:#a855f7"></i>
+              <i class="ti ti-settings-2 mod-icon" style="color:var(--purple-text)"></i>
               <div class="mod-info">
                 <span class="mod-nome">MRP</span>
                 <span class="mod-desc">Necessidade de materiais</span>

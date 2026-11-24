@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>FlowProd — Painel de Alertas</title>
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
   :root{
     --bg:#080d14;--surface:#0d1520;--border:#1a2740;
@@ -14,14 +14,14 @@
   }
   *{box-sizing:border-box;margin:0;padding:0;}
   body{
-    background:var(--bg);color:var(--text);font-family:'Poppins',sans-serif;
+    background:var(--bg);color:var(--text);font-family:var(--font);
     min-height:100vh;display:flex;flex-direction:column;
   }
 
   /* ── Topbar ── */
   .topbar{
     background:var(--surface);border-bottom:1px solid var(--border);
-    padding:0 32px;height:58px;
+    padding:0 32px;height:60px;
     display:flex;align-items:center;justify-content:space-between;
     flex-shrink:0;
   }
@@ -31,14 +31,14 @@
   .page-title{font-size:13px;color:var(--muted);}
   .topbar-right{display:flex;align-items:center;gap:10px;}
   .btn-admin{
-    background:var(--blue);border:none;border-radius:7px;color:#fff;
+    background:var(--blue-strong);border:none;border-radius:7px;color:#fff;
     padding:7px 16px;font-size:13px;font-weight:600;cursor:pointer;
-    font-family:'Poppins',sans-serif;text-decoration:none;
+    font-family:var(--font);text-decoration:none;
     display:inline-flex;align-items:center;gap:6px;
   }
   .btn-voltar{
     background:none;border:1px solid var(--border);border-radius:7px;color:var(--muted);
-    padding:7px 16px;font-size:13px;cursor:pointer;font-family:'Poppins',sans-serif;
+    padding:7px 16px;font-size:13px;cursor:pointer;font-family:var(--font);
     text-decoration:none;transition:.2s;
   }
   .btn-voltar:hover{border-color:var(--blue);color:var(--blue);}
@@ -72,7 +72,7 @@
     font-size:16px;font-weight:700;flex-shrink:0;
   }
   .avatar-cliente{background:linear-gradient(135deg,#0e7490,#06b6d4);}
-  .avatar-senha{background:linear-gradient(135deg,#1a5ccc,#2b7fff);}
+  .avatar-senha{background:var(--grad-blue);}
   .card-alerta-info{flex:1;}
   .card-alerta-nome{font-size:14px;font-weight:600;}
   .card-alerta-sub{font-size:12px;color:var(--muted);margin-top:2px;}
@@ -103,10 +103,11 @@
 
   .btn-refresh{
     background:none;border:1px solid var(--border);border-radius:7px;color:var(--muted);
-    padding:6px 14px;font-size:12px;cursor:pointer;font-family:'Poppins',sans-serif;transition:.2s;
+    padding:6px 14px;font-size:12px;cursor:pointer;font-family:var(--font);transition:.2s;
   }
   .btn-refresh:hover{border-color:var(--blue);color:var(--blue);}
 </style>
+<link rel="stylesheet" href="/css/flowprod-ui.css">
 </head>
 <body>
 

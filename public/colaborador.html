@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>FlowProd — Verificar Acesso</title>
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
   :root{
     --bg:#080d14; --surface:#0d1520; --border:#1a2740;
@@ -14,7 +14,7 @@
   }
   *{box-sizing:border-box;margin:0;padding:0;}
   body{
-    background:var(--bg);color:var(--text);font-family:'Poppins',sans-serif;
+    background:var(--bg);color:var(--text);font-family:var(--font);
     min-height:100vh;display:flex;flex-direction:column;
     align-items:center;justify-content:flex-start;padding:24px;
     padding-top: 90px;
@@ -41,19 +41,19 @@
   label{font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.7px;}
   input{
     background:var(--bg);border:1px solid var(--border);border-radius:8px;
-    color:var(--text);font-family:'Poppins',sans-serif;font-size:14px;
+    color:var(--text);font-family:var(--font);font-size:14px;
     padding:11px 14px;transition:.2s;outline:none;width:100%;
   }
   input:focus{border-color:var(--blue);}
 
   .btn{
     border:none;border-radius:8px;color:#fff;cursor:pointer;
-    font-family:'Poppins',sans-serif;font-size:14px;font-weight:600;
+    font-family:var(--font);font-size:14px;font-weight:600;
     padding:13px;width:100%;transition:.2s;
     display:flex;align-items:center;justify-content:center;gap:8px;
   }
-  .btn-blue{background:linear-gradient(135deg,var(--blue-dk),var(--blue));}
-  .btn-green{background:linear-gradient(135deg,#15803d,var(--green));}
+  .btn-blue{background:var(--grad-blue);}
+  .btn-green{background:var(--grad-green);}
   .btn-ghost{
     background:none;border:1px solid var(--border);color:var(--muted);
   }
@@ -85,7 +85,7 @@
   }
   .result-avatar{
     width:44px;height:44px;border-radius:50%;
-    background:linear-gradient(135deg,var(--blue-dk),var(--blue));
+    background:var(--grad-blue);
     display:flex;align-items:center;justify-content:center;
     font-size:18px;font-weight:700;flex-shrink:0;
   }
@@ -99,10 +99,10 @@
     padding:14px 16px;cursor:pointer;transition:.2s;
     display:flex;align-items:center;gap:12px;
   }
-  .result-item:hover{border-color:var(--blue);background:#0a1220;}
+  .result-item:hover{border-color:var(--blue);background:var(--surface-alt);}
   .result-item-avatar{
     width:36px;height:36px;border-radius:50%;
-    background:linear-gradient(135deg,var(--blue-dk),var(--blue));
+    background:var(--grad-blue);
     display:flex;align-items:center;justify-content:center;
     font-size:14px;font-weight:700;flex-shrink:0;
   }
@@ -126,7 +126,7 @@
   .cred-copy{
     background:none;border:1px solid var(--border);color:var(--muted);
     padding:4px 10px;border-radius:5px;cursor:pointer;font-size:11px;
-    font-family:'Poppins',sans-serif;transition:.2s;flex-shrink:0;
+    font-family:var(--font);transition:.2s;flex-shrink:0;
   }
   .cred-copy:hover{border-color:var(--blue);color:var(--blue);}
 
@@ -146,6 +146,7 @@
   .link-login a:hover{text-decoration:underline;}
 
 </style>
+<link rel="stylesheet" href="/css/flowprod-ui.css">
 </head>
 <body>
 <a href="/login.html" class="back">← Login</a>
